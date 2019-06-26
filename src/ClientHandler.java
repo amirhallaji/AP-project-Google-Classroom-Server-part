@@ -3,7 +3,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-class ClientHandler implements Runnable{
+class ClientHandler extends Thread{
     private Socket clientSocket;
     private String username;
     private DataInputStream inputStream;
@@ -26,31 +26,6 @@ class ClientHandler implements Runnable{
                 String[] arr = receivedText.split(":");
                 recipientUsername = arr[0];
                 messageText = arr[1];
-                if (recipientUsername.equals("signin")){
-                    String username = arr[1];
-                    String password = arr[2];
-                    if (Server.people.contains(Server.position.get(username))) {
-                        Person p = Server.people.get(Server.position.get(username));
-                        if (p.getPassword().equals(password)){
-                            p.setLoggedIn(true);
-                        }
-                    }
-                    else {
-                        //send error
-                    }
-
-                }
-                else if (recipientUsername.equals("signup")){
-                    String username = arr[1];
-                    String password = arr[2];
-                    if (!Server.people.contains(Server.position.get(username))){
-                        Person person = new Person(username,password);
-                        person.setLoggedIn(true);
-                    }
-                    else {
-                        //error username
-                    }
-                }
                 for (ClientHandler clientHandlers : Server.activeClient) {
                     if (clientHandlers.equals(recipientUsername)
                             && clientHandlers.username.equals(this.username)) {
