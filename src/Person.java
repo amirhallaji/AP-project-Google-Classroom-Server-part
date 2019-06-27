@@ -1,13 +1,22 @@
+import java.util.ArrayList;
+
 public class Person{
     private String username;
     private String password;
     private boolean isLoggedIn = false;
+    private ArrayList<Class> personClasses =new ArrayList<>();
     //picture
 
+
+    public ArrayList<Class> getPersonClasses() {
+        return personClasses;
+    }
 
     public Person(String username, String password) {
         this.username = username;
         this.password = password;
+        Class c = new Class(this,"Test","test","123");
+        personClasses.add(c);
     }
 
     public void setPassword(String password) {
@@ -33,4 +42,6 @@ public class Person{
     public boolean isLoggedIn() {
         return isLoggedIn;
     }
+
+
 }
