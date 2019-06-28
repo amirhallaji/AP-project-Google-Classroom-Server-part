@@ -10,19 +10,29 @@ class Server {
     static ArrayList<ClientHandler> activeClient = new ArrayList<>();
     static ArrayList<Person> people = new ArrayList<>();
     static HashMap<String,Integer> position = new HashMap<>();
+    static ArrayList <String> testlist=  new ArrayList<>() ;
     //Related to Classes
     static ArrayList<Class>classes = new ArrayList<>();
     static HashMap<String,Integer> classCodes = new HashMap();
 
     public static void main(String[] args) throws IOException {
+        testlist.add("salam");
+        testlist.add("khubi");
+        testlist.add("bye") ;
         int numberOfActiveClients = 0;
         ServerSocket serverSocket  = new ServerSocket(8867);
         Socket clientSocket;
         while (true){
             clientSocket = serverSocket.accept();
-            System.out.println("Client Connected !!");
             DataInputStream serverDataInputStream = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream serverDataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+            String s = testlist.toString();
+            serverDataOutputStream.writeUTF("testList:" + s);
+//            for (int i = 0; i < testlist.size() ; i++) {
+//                serverDataOutputStream.writeUTF(testlist.get(i)+":");
+//                serverDataOutputStream.flush();
+//            }
+            serverDataOutputStream.flush();
             String message = serverDataInputStream.readUTF();
             System.out.println(message);
             Thread thread = new Thread();
