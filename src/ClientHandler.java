@@ -1,9 +1,8 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 class ClientHandler extends Thread {
+
     private Socket clientSocket;
     private String username;
     private static DataInputStream inputStream;
@@ -18,35 +17,27 @@ class ClientHandler extends Thread {
 
     @Override
     public void run() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String receivedText = inputStream.readUTF();
-                    System.out.println("The first part");
-                    String[] arr = receivedText.split(":");
-                    System.out.println("Received TExt : " + receivedText);
-                    if (arr[0].equals("classList")) {
-                        System.out.println("into class list");
-                        outputStream.writeUTF("balalala");
-                        Person p = Server.people.get(Server.position.get(arr[1]));
-                        int n = p.getPersonClasses().size();
-                        for (int i = 0; i < n; i++) {
-                            outputStream.writeUTF(p.getPersonClasses().get(i).getName() + "@" + p.getPersonClasses().get(i).getNumber() + ":");
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        try {
+            String message = inputStream.readUTF();
+            String [] params = message.split(":") ;
+            if(params[0].equals("createClass")){
+                createClass(params);
             }
-        }).start();
+            else if(params[0].equals("joinClass")){
+                joinClass(params);
+            }
 
+
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
+    //************************************************************
+    public static void createClass(String []s) {
 
-    public static void createClass(String s) {
-        String[] params = s.split(":"); //user:classname:description:roomNumber
-        Person p = Server.people.get(Server.position.get(params[1]));
-        Class c = new Class(p, params[1], params[2], params[3]);
+        Person p = Server.people.get(Server.position.get(s[1]));
+        Class c = new Class(p, s[2], s[3], s[4]); //teacher(user):name:description:number
         p.getPersonClasses().add(c);
         String code;
         while (true) {
@@ -58,35 +49,44 @@ class ClientHandler extends Thread {
         }
         Server.classCodes.put(code, Server.classes.size());
         Server.classes.add(c);
-        System.out.println("Class " + c.getCode() + "created");
         try {
             outputStream.writeUTF("makeClass:success:" + c.getCode());
+            outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    //****************************************************************
+    public static void joinClass(String [] s) {
 
-    public static void joinClass(String s) {
-        String[] params = s.split(":");
-
-        if (!Server.classCodes.containsKey(params[2])) {
-            System.out.println("Error for invalid code");
+        if (!Server.classCodes.containsKey(s[1])) {
             try {
                 outputStream.writeUTF("joinClass:invalidCode");
+                outputStream.flush();
+                String message = inputStream.readUTF();
+                String [] params = message.split(":");
+                if(params[0].equals("retry")){
+                    joinClass(params);
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            Person p = Server.people.get(Server.position.get(params[1]));
-            Class c = Server.classes.get(Server.classCodes.get(params[2]));
+            Person p = Server.people.get(Server.position.get(s[1]));
+            Class c = Server.classes.get(Server.classCodes.get(s[2]));
             c.getStudents().add(p);
-            System.out.println("joined Successfully");
             try {
                 outputStream.writeUTF("joinClass:success");
+                outputStream.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
     }
+    //*********************************************************************
+
+
+
 }

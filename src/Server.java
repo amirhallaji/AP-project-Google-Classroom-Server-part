@@ -1,43 +1,32 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 class Server {
     static ArrayList<ClientHandler> activeClient = new ArrayList<>();
     static ArrayList<Person> people = new ArrayList<>();
     static HashMap<String,Integer> position = new HashMap<>();
-    static ArrayList <String> testlist=  new ArrayList<>() ;
     //Related to Classes
     static ArrayList<Class>classes = new ArrayList<>();
     static HashMap<String,Integer> classCodes = new HashMap();
 
     public static void main(String[] args) throws IOException {
-        testlist.add("salam");
-        testlist.add("khubi");
-        testlist.add("bye") ;
-        int numberOfActiveClients = 0;
+
         ServerSocket serverSocket  = new ServerSocket(8867);
         Socket clientSocket;
+
         while (true){
             clientSocket = serverSocket.accept();
             DataInputStream serverDataInputStream = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream serverDataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
-            String s = testlist.toString();
-            serverDataOutputStream.writeUTF("testList:" + s);
-//            for (int i = 0; i < testlist.size() ; i++) {
-//                serverDataOutputStream.writeUTF(testlist.get(i)+":");
-//                serverDataOutputStream.flush();
-//            }
-            serverDataOutputStream.flush();
+
             String message = serverDataInputStream.readUTF();
             System.out.println(message);
-            Thread thread = new Thread();
+
+            Thread thread ;
             String[] parrams = message.split(":");
-            Person person = null;
+            Person person ;
+
             if (parrams[0].equals("userChecker")){
                 String result;
                 if (position.containsKey(parrams[1])){
@@ -71,6 +60,17 @@ class Server {
                 if (position.containsKey(parrams[1])){
                 }
                 else {
+
+                    try { //Creating new file for each person when registering
+                        File information = new File("/home/amir/Desktop/" + parrams[1] + ".txt");
+                        information.createNewFile();
+                        FileWriter fileWriter = new FileWriter(information);
+                        fileWriter.write(parrams[1] + ":" + parrams[2]);
+                        fileWriter.flush();
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
+
                     thread = new ClientHandler(clientSocket, parrams[1], serverDataInputStream, serverDataOutputStream);
                     Person person1 = new Person(parrams[1],parrams[2]);
                     people.add(person1);

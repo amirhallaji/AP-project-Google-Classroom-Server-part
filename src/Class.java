@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.*;
 
 class Class {
     private String name;
