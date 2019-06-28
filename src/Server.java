@@ -62,7 +62,7 @@ class Server {
                 else {
 
                     try { //Creating new file for each person when registering
-                        File information = new File("/home/amir/Desktop/" + parrams[1] + ".txt");
+                        File information = new File(parrams[1] + ".txt");
                         information.createNewFile();
                         FileWriter fileWriter = new FileWriter(information);
                         fileWriter.write(parrams[1] + ":" + parrams[2]);
@@ -75,7 +75,11 @@ class Server {
                     Person person1 = new Person(parrams[1],parrams[2]);
                     people.add(person1);
                     position.put(parrams[1],people.size()-1);
+                    //ClientHandler.sendClassList(person1);
+                    serverDataOutputStream.writeUTF("salam:" + person1.getUsername());
+                    System.out.println("Before starting thread" + person1);
                     thread.start();
+
                 }
 
             }

@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.*;
 
-class Class {
+class Class implements Serializable {
     private String name;
     private String description;
     private String number;

@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.*;
 
-public class Person{
+public class Person implements Serializable {
     private String username;
     private String password;
     private boolean isLoggedIn = false;

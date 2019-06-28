@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.sql.SQLOutput;
 
 class ClientHandler extends Thread {
 
@@ -20,10 +21,13 @@ class ClientHandler extends Thread {
         try {
             String message = inputStream.readUTF();
             String [] params = message.split(":") ;
+            System.out.println("params 0 >>>>"+params[0]);
             if(params[0].equals("createClass")){
+                System.out.println("IN if");
                 createClass(params);
             }
             else if(params[0].equals("joinClass")){
+                System.out.println("in Else if");
                 joinClass(params);
             }
 
@@ -36,9 +40,10 @@ class ClientHandler extends Thread {
     //************************************************************
     public static void createClass(String []s) throws IOException {
 
-        Person p = Server.people.get(Server.position.get(s[1]));
-        Class c = new Class(p, s[2], s[3], s[4]); //teacher(user):name:description:number
-        p.getPersonClasses().add(c);
+        System.out.println("IN createClass()");
+        Person person = Server.people.get(Server.position.get(s[1]));
+        Class c = new Class(person, s[2], s[3], s[4]); //teacher(user):name:description:number
+        person.getPersonClasses().add(c);
         String code;
         while (true) {
             code = Server.codeGenerator();
@@ -49,15 +54,27 @@ class ClientHandler extends Thread {
         }
         Server.classCodes.put(code, Server.classes.size());
         Server.classes.add(c);
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-        objectOutputStream.writeObject(p.getPersonClasses());
+
+        Class c1 = new Class(person,"Test","AP","123");
+        Class c2 = new Class(person,"Test 2","Fizik","456");
+
+        person.getPersonClasses().add(c1);
+        person.getPersonClasses().add(c2);
+
+        sendClassList(person);
 
         try {
             outputStream.writeUTF("makeClass:success:" + c.getCode());
             outputStream.flush();
+            System.out.println("MAke Class Successful");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    //*************************************************************
+    public static void sendClassList(Person person) throws IOException {
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+        objectOutputStream.writeObject(person.getPersonClasses());
     }
     //****************************************************************
     public static void joinClass(String [] s) {
