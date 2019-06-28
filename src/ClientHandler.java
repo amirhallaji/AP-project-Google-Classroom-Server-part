@@ -3,7 +3,7 @@ import java.net.*;
 
 class ClientHandler extends Thread {
 
-    private Socket clientSocket;
+    private static Socket clientSocket;
     private String username;
     private static DataInputStream inputStream;
     private static DataOutputStream outputStream;
@@ -34,7 +34,7 @@ class ClientHandler extends Thread {
         }
     }
     //************************************************************
-    public static void createClass(String []s) {
+    public static void createClass(String []s) throws IOException {
 
         Person p = Server.people.get(Server.position.get(s[1]));
         Class c = new Class(p, s[2], s[3], s[4]); //teacher(user):name:description:number
@@ -49,6 +49,9 @@ class ClientHandler extends Thread {
         }
         Server.classCodes.put(code, Server.classes.size());
         Server.classes.add(c);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+        objectOutputStream.writeObject(p.getPersonClasses());
+
         try {
             outputStream.writeUTF("makeClass:success:" + c.getCode());
             outputStream.flush();
@@ -86,7 +89,6 @@ class ClientHandler extends Thread {
 
     }
     //*********************************************************************
-
 
 
 }

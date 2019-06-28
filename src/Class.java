@@ -6,6 +6,7 @@ class Class {
     private String number;
     private String code;
     private Person teacher;
+    private ArrayList<Person> TAs = new ArrayList<>();
     private ArrayList<Person> students = new ArrayList<>();
 
     public Class(Person p,String name, String description, String number) {
