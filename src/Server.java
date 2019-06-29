@@ -10,6 +10,8 @@ class Server {
     static ArrayList<Class>classes = new ArrayList<>();
     static ArrayList<String> testNames = new ArrayList<>();
     static HashMap<String,Integer> classCodes = new HashMap();
+    static ArrayList<Homework> homework = new ArrayList<>();
+    static HashMap<String,String> homeworkTopic = new HashMap<>();    // code,topic
 
     public static void main(String[] args) throws IOException {
 
