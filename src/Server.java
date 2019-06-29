@@ -8,9 +8,17 @@ class Server {
     static HashMap<String,Integer> position = new HashMap<>();
     //Related to Classes
     static ArrayList<Class>classes = new ArrayList<>();
+    static ArrayList<String> testNames = new ArrayList<>();
     static HashMap<String,Integer> classCodes = new HashMap();
 
     public static void main(String[] args) throws IOException {
+
+        testNames.add("math");
+        testNames.add("123");
+        testNames.add("corner");
+        testNames.add("108");
+        testNames.add("ap");
+        testNames.add("400");
 
         ServerSocket serverSocket  = new ServerSocket(8867);
         Socket clientSocket;
@@ -75,8 +83,12 @@ class Server {
                     Person person1 = new Person(parrams[1],parrams[2]);
                     people.add(person1);
                     position.put(parrams[1],people.size()-1);
-                    //ClientHandler.sendClassList(person1);
-                    serverDataOutputStream.writeUTF("salam:" + person1.getUsername());
+                    String s1 = "";
+                    for (int i = 0; i < testNames.size(); i++) {
+                        s1 = s1.concat(testNames.get(i) + ":");
+                    }
+                    serverDataOutputStream.writeUTF("listOfClasses:"+s1);
+                    serverDataOutputStream.flush();
                     System.out.println("Before starting thread" + person1);
                     thread.start();
 
