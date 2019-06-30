@@ -12,6 +12,7 @@ class Server {
     static HashMap<String,Integer> classCodes = new HashMap();
     static ArrayList<Homework> homework = new ArrayList<>();
     static HashMap<String,String> homeworkTopic = new HashMap<>();    // code,topic
+    static String message;
 
     public static void main(String[] args) throws IOException {
 
@@ -27,11 +28,13 @@ class Server {
 
         while (true){
             clientSocket = serverSocket.accept();
+            System.out.println("User connected");
             DataInputStream serverDataInputStream = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream serverDataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
 
-            String message = serverDataInputStream.readUTF();
-            System.out.println(message);
+            message = serverDataInputStream.readUTF();
+            ClientHandler.msg = message;
+            System.out.println("Server >>>>>>>>>"+message);
 
             Thread thread ;
             String[] parrams = message.split(":");
@@ -85,15 +88,7 @@ class Server {
                     Person person1 = new Person(parrams[1],parrams[2]);
                     people.add(person1);
                     position.put(parrams[1],people.size()-1);
-                    String s1 = "";
-                    for (int i = 0; i < testNames.size(); i++) {
-                        s1 = s1.concat(testNames.get(i) + ":");
-                    }
-                    serverDataOutputStream.writeUTF("listOfClasses:"+s1);
-                    serverDataOutputStream.flush();
-                    System.out.println("Before starting thread" + person1);
                     thread.start();
-
                 }
 
             }
