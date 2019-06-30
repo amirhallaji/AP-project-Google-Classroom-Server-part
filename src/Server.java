@@ -32,66 +32,13 @@ class Server {
             DataInputStream serverDataInputStream = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream serverDataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
 
-            message = serverDataInputStream.readUTF();
-            ClientHandler.msg = message;
-            System.out.println("Server >>>>>>>>>"+message);
+            // ***  message = serverDataInputStream.readUTF();
+            // ***   ClientHandler.msg = message;
+            // ***   System.out.println("Server >>>>>>>>>"+message);
 
-            Thread thread ;
-            String[] parrams = message.split(":");
-            Person person ;
+            Thread thread = new ClientHandler(clientSocket,serverDataInputStream,serverDataOutputStream);
+            thread.start();
 
-            if (parrams[0].equals("userChecker")){
-                String result;
-                if (position.containsKey(parrams[1])){
-                    result = "repeated";
-                    serverDataOutputStream.writeUTF("checkResult:repeated");
-                }
-                else {
-                    result = "unique";
-                    serverDataOutputStream.writeUTF("checkResult:unique");
-                }
-                serverDataOutputStream.writeUTF(result);
-                System.out.println(result);
-            }
-            if (parrams[0].equals("signIn")){
-                if (position.containsKey(parrams[1])) {
-                    person = people.get(position.get(parrams[1]));
-                    if (person.getPassword().equals(parrams[2])){
-                        person.setLoggedIn(true);
-                        thread = activeClient.get(position.get(parrams[1]));
-                        thread.start();
-                    }
-                    else {
-                        //wrong password
-                    }
-                }
-                else {
-                    //error
-                }
-            }
-            else if(parrams[0].equals("signUp")){
-                if (position.containsKey(parrams[1])){
-                }
-                else {
-
-                    try { //Creating new file for each person when registering
-                        File information = new File(parrams[1] + ".txt");
-                        information.createNewFile();
-                        FileWriter fileWriter = new FileWriter(information);
-                        fileWriter.write(parrams[1] + ":" + parrams[2]);
-                        fileWriter.flush();
-                    }catch (IOException e){
-                        e.printStackTrace();
-                    }
-
-                    thread = new ClientHandler(clientSocket, parrams[1], serverDataInputStream, serverDataOutputStream);
-                    Person person1 = new Person(parrams[1],parrams[2]);
-                    people.add(person1);
-                    position.put(parrams[1],people.size()-1);
-                    thread.start();
-                }
-
-            }
         }
     }
     public static String codeGenerator(){

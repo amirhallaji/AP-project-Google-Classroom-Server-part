@@ -16,8 +16,8 @@ public class Person implements Serializable {
     public Person(String username, String password) {
         this.username = username;
         this.password = password;
-        Class c = new Class(this,"Test","test","123");
-        personClasses.add(c);
+//        Class c = new Class(this,"Test","test","123");
+//        personClasses.add(c);
     }
 
     public void setPassword(String password) {

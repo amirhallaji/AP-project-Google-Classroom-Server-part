@@ -6,50 +6,119 @@ import java.net.*;
 
 class ClientHandler extends Thread {
     private static Socket clientSocket;
-    private String username;
     private static DataInputStream inputStream;
     private static DataOutputStream outputStream;
-    static String msg;
+    static String message;
 
-    public ClientHandler(Socket clientSocket, String username, DataInputStream inputStream, DataOutputStream outputStream) {
+    public ClientHandler(Socket clientSocket, DataInputStream inputStream, DataOutputStream outputStream) {
         this.clientSocket = clientSocket;
-        this.username = username;
         this.inputStream = inputStream;
         this.outputStream = outputStream;
     }
 
     @Override
     public void run() {
-        // while (true) {`
-            try {
-                while (true) {
-                    msg = inputStream.readUTF();
-                    String[] params = msg.split(":");
-                    System.out.println("message >>>" + msg);
-                    switch (params[0]) {
-                        case "createClass":
-                            createClass(params);
-                            break;
-                        case "joinClass":
-                            joinClass(params);
-                            break;
-                        case "classProfile":
-                            showClassProfile(params[1]);
-                            break;
-                        case "createHomework":
-                            createHomework(params);
-                            break;
-                        case "classList": {
-                            System.out.println("into classList");
-                            listOfClasses(params[1]);
-                        }
+        try {
+            while (true) {
+                message = inputStream.readUTF();
+                System.out.println("message >>>" + message);
+                String[] parrams = message.split(":");
+                System.out.println(parrams[0]);
+
+                switch (parrams[0]) {
+                    case "userChecker": {
+                        userChecker(parrams);
+                        break;
+                    }
+                    case "signIn": {
+                        signIn(parrams);
+                        break;
+                    }
+                    case "signUp": {
+                        signUp(parrams);
+                        break;
+                    }
+                    case "createClass": {
+                        createClass(parrams);
+                        break;
+                    }
+                    case "joinClass": {
+                        joinClass(parrams);
+                        break;
+                    }
+                    case "classProfile": {
+                        showClassProfile(parrams[1]);
+                        break;
+                    }
+                    case "createHomework": {
+                        createHomework(parrams);
+                        break;
+                    }
+                    case "classList": {
+                        System.out.println("into classList");
+                        classList(parrams[1]);
                         break;
                     }
                 }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+//****************************************************************
+    public void userChecker(String[] parrams) throws IOException {
+        String result;
+        if (Server.position.containsKey(parrams[1])) {
+            result = "repeated";
+            outputStream.writeUTF("checkResult:repeated");
+        } else {
+            result = "unique";
+            outputStream.writeUTF("checkResult:unique");
+        }
+        outputStream.writeUTF(result);
+        System.out.println(result);
+    }
+
+    //*************************************************************
+    public void signUp(String[] parrams) throws IOException {
+        if (Server.position.containsKey(parrams[1])) {
+            outputStream.writeUTF("error:repeatedUsername");
+            outputStream.flush();
+        } else {
+            try { //Creating new file for each person when registering
+                File information = new File(parrams[1] + ".txt");
+                information.createNewFile();
+                FileWriter fileWriter = new FileWriter(information);
+                fileWriter.write(parrams[1] + ":" + parrams[2]);
+                fileWriter.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-       // }
+
+            Person person1 = new Person(parrams[1], parrams[2]);
+            Server.people.add(person1);
+            Server.position.put(parrams[1], Server.people.size() - 1);
+            outputStream.writeUTF("signUp:success");
+            outputStream.flush();
+        }
+    }
+
+    //**********************************************************************
+    public void signIn(String[] parrams) throws IOException {
+        Person person;
+        if (Server.position.containsKey(parrams[1])) {
+            person = Server.people.get(Server.position.get(parrams[1]));
+            if (person.getPassword().equals(parrams[2])) {
+                person.setLoggedIn(true);
+                outputStream.writeUTF("signIn:success");
+            } else {
+                outputStream.writeUTF("error:wrongPassword");
+                outputStream.flush();
+            }
+        } else {
+            outputStream.writeUTF("error:wrongUsername");
+            outputStream.flush();
+        }
     }
 
     //************************************************************
@@ -189,13 +258,13 @@ class ClientHandler extends Thread {
     }
 
     //********************************************************
-    public static void listOfClasses(String s) throws IOException {
+    public static void classList(String s) throws IOException {
         Person p = Server.people.get(Server.position.get(s));
         String result = "classList:";
         for (int i = 0; i < p.getPersonClasses().size(); i++) {
             result = result.concat(p.getPersonClasses().get(i).getName() + ":");
         }
-        System.out.println("result >>> " + result);
+        System.out.println("classList >>> " + result);
         outputStream.writeUTF(result);
     }
     //**********************************************************
