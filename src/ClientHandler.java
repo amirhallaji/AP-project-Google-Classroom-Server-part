@@ -39,6 +39,7 @@ class ClientHandler extends Thread {
                         break;
                     }
                     case "createClass": {
+                        System.out.println("##create class from android");
                         createClass(parrams);
                         break;
                     }
@@ -124,7 +125,6 @@ class ClientHandler extends Thread {
 
     //************************************************************
     public static void createClass(String[] s) throws IOException {
-
         Person person = Server.people.get(Server.position.get(s[1]));
         Class c = new Class(person, s[2], s[3], s[4]); //teacher(user):name:description:number
         person.getPersonClasses().add(c);
@@ -139,15 +139,15 @@ class ClientHandler extends Thread {
         Server.classCodes.put(code, Server.classes.size());
         Server.classes.add(c);
 
-        sendClassList(person);
-
         try {
-            outputStream.writeUTF("makeClass:success:" + c.getCode());
-//            outputStream.flush();
-            System.out.println("Make Class Successful");
+            outputStream.writeUTF("createClass:success:" + c.getCode());
+            outputStream.flush();
+            System.out.println("createClass Successful " + c.getCode());
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        sendClassList(person);
     }
 
     //*************************************************************

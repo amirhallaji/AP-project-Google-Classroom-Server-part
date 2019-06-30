@@ -41,10 +41,12 @@ class Server {
 
         }
     }
+    //****************************************
     public static String codeGenerator(){
         StringBuilder code = new StringBuilder() ;
         for (int i = 0; i < 5 ; i++) {
-            char ch = (char) (((int)(Math.random())*26) + 97);
+            int number = (int)((Math.random()) * 26) + 97;
+            char ch = (char) number;
             code.append(ch) ;
         }
         return code.toString();
