@@ -62,7 +62,8 @@ class ClientHandler extends Thread {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            System.out.println(e);
         }
     }
 //****************************************************************
@@ -152,6 +153,7 @@ class ClientHandler extends Thread {
     //*************************************************************
     public static void sendClassList(Person person) throws IOException {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+        System.out.println("***object ***"+person.getPersonClasses());
         objectOutputStream.writeObject(person.getPersonClasses());
     }
 
@@ -262,10 +264,16 @@ class ClientHandler extends Thread {
         Person p = Server.people.get(Server.position.get(s));
         String result = "classList:";
         for (int i = 0; i < p.getPersonClasses().size(); i++) {
-            result = result.concat(p.getPersonClasses().get(i).getName() + ":");
+                result = result.concat(p.getPersonClasses().get(i).getName() + ":" + p.getPersonClasses().get(i).getDescription() + ":");
         }
-        System.out.println("classList >>> " + result);
+
+//        result = result.concat("abcd:");
+//        result = result.concat("efg:");
+//        result = result.concat("hij:");
+//        result = result.concat("werty:");
+        System.out.println("Server:classList >>> " + result);
         outputStream.writeUTF(result);
+        outputStream.flush();
     }
     //**********************************************************
 
