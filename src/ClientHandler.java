@@ -159,17 +159,13 @@ class ClientHandler extends Thread {
 
     //****************************************************************
     public static void joinClass(String[] s) {
-
-        if (!Server.classCodes.containsKey(s[1])) {
+        System.out.println("SERVER::" + s[0] + s[1] + s[2]);
+        if (!Server.classCodes.containsKey(s[2])) {
             try {
-                outputStream.writeUTF("joinClass:invalidCode");
+                String s1 = "joinClass:error";
+                outputStream.writeUTF(s1);
+                System.out.println("//////"+s1);
                 outputStream.flush();
-                String message = inputStream.readUTF();
-                String[] params = message.split(":");
-                if (params[0].equals("retry")) {
-                    joinClass(params);
-                }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -178,8 +174,9 @@ class ClientHandler extends Thread {
             Class c = Server.classes.get(Server.classCodes.get(s[2]));
             c.getStudents().add(p);
             try {
-                outputStream.writeUTF("joinClass:success");
+                outputStream.writeUTF("joinClass:success:" + c.getName());
                 outputStream.flush();
+                System.out.println("SERVER join class success");
             } catch (IOException e) {
                 e.printStackTrace();
             }
