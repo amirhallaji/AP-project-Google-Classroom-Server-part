@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Homework {
     private String title ;
     private String decsription ;
@@ -6,6 +8,8 @@ public class Homework {
     private String time ;
     private String topic ;
     private String code ;
+    private Integer numberOfComments ;
+    private ArrayList <Comment> comments ;
 
     public Homework(String title, String decsription, String points, String date,String time, String topic) {
         this.title = title;
@@ -14,6 +18,7 @@ public class Homework {
         this.date = date;
         this.time = time ;
         this.topic = topic;
+        this.comments = new ArrayList<>() ;
     }
 
     public String getTitle() {
@@ -70,5 +75,13 @@ public class Homework {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public ArrayList<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(ArrayList<Comment> comments) {
+        this.comments = comments;
     }
 }

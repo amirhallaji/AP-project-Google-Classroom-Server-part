@@ -8,20 +8,13 @@ class Server {
     static HashMap<String,Integer> position = new HashMap<>();
     //Related to Classes
     static ArrayList<Class>classes = new ArrayList<>();
-    static ArrayList<String> testNames = new ArrayList<>();
+    static HashMap<String,Integer>classPositions = new HashMap<>() ;
     static HashMap<String,Integer> classCodes = new HashMap();
     static ArrayList<Homework> homework = new ArrayList<>();
     static HashMap<String,String> homeworkTopic = new HashMap<>();    // code,topic
     static String message;
 
     public static void main(String[] args) throws IOException {
-
-        testNames.add("math");
-        testNames.add("123");
-        testNames.add("corner");
-        testNames.add("108");
-        testNames.add("ap");
-        testNames.add("400");
 
         ServerSocket serverSocket  = new ServerSocket(8867);
         Socket clientSocket;

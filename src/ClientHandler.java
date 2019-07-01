@@ -60,6 +60,10 @@ class ClientHandler extends Thread {
                         classList(parrams[1]);
                         break;
                     }
+                    case "homeworkList": {
+                        homeworkList(parrams[1]);
+                        break;
+                    }
                 }
             }
         } catch (IOException e) {
@@ -67,7 +71,8 @@ class ClientHandler extends Thread {
             System.out.println(e);
         }
     }
-//****************************************************************
+
+    //****************************************************************
     public void userChecker(String[] parrams) throws IOException {
         String result;
         if (Server.position.containsKey(parrams[1])) {
@@ -138,6 +143,7 @@ class ClientHandler extends Thread {
         }
         Server.classCodes.put(code, Server.classes.size());
         Server.classes.add(c);
+        Server.classPositions.put(c.getName(), Server.classes.size() - 1);
 
         try {
             outputStream.writeUTF("createClass:success:" + c.getCode());
@@ -153,7 +159,7 @@ class ClientHandler extends Thread {
     //*************************************************************
     public static void sendClassList(Person person) throws IOException {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-        System.out.println("***object ***"+person.getPersonClasses());
+        System.out.println("***object ***" + person.getPersonClasses());
         objectOutputStream.writeObject(person.getPersonClasses());
     }
 
@@ -164,7 +170,7 @@ class ClientHandler extends Thread {
             try {
                 String s1 = "joinClass:error";
                 outputStream.writeUTF(s1);
-                System.out.println("//////"+s1);
+                System.out.println("//////" + s1);
                 outputStream.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -188,7 +194,7 @@ class ClientHandler extends Thread {
     public static void showClassProfile(String code) throws IOException {
         Class c = Server.classes.get(Server.classCodes.get(code));
 
-        String message = inputStream.readUTF();
+        //String message = inputStream.readUTF();
         if (message.equals("streams")) {
             streams();
         } else if (message.equals("classWork")) {
@@ -261,17 +267,24 @@ class ClientHandler extends Thread {
         Person p = Server.people.get(Server.position.get(s));
         String result = "classList:";
         for (int i = 0; i < p.getPersonClasses().size(); i++) {
-                result = result.concat(p.getPersonClasses().get(i).getName() + ":" + p.getPersonClasses().get(i).getDescription() + ":");
+            result = result.concat(p.getPersonClasses().get(i).getName() + ":" + p.getPersonClasses().get(i).getDescription() + ":");
         }
-
-//        result = result.concat("abcd:");
-//        result = result.concat("efg:");
-//        result = result.concat("hij:");
-//        result = result.concat("werty:");
         System.out.println("Server:classList >>> " + result);
         outputStream.writeUTF(result);
         outputStream.flush();
     }
-    //**********************************************************
 
+    //**********************************************************
+    public static void homeworkList(String s) throws IOException {
+        Class c = Server.classes.get(Server.classPositions.get(s));
+        String result = "homeworkList:";
+        for (int i = 0; i < c.getHomework().size(); i++) {
+            result = result.concat(c.getHomework().get(i).getTopic() + ":" + c.getHomework().get(i).getDate() + ":" + c.getHomework().get(i).getComments() + ":");
+        }
+        //result = result.concat("physic:201971:2:") ;
+        System.out.println("server >>>>>" + result);
+        outputStream.writeUTF(result);
+        outputStream.flush();
+    }
+    //**********************************************************
 }
