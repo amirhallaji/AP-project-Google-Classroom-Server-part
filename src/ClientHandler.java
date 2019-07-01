@@ -1,6 +1,3 @@
-
-
-
 import java.io.*;
 import java.net.*;
 
@@ -21,9 +18,9 @@ class ClientHandler extends Thread {
         try {
             while (true) {
                 message = inputStream.readUTF();
-                System.out.println("message >>>" + message);
+               // System.out.println("message >>>" + message);
                 String[] parrams = message.split(":");
-                System.out.println(parrams[0]);
+                //System.out.println(parrams[0]);
 
                 switch (parrams[0]) {
                     case "userChecker": {
@@ -31,6 +28,7 @@ class ClientHandler extends Thread {
                         break;
                     }
                     case "signIn": {
+                        System.out.println("Server >>>>>>>>>>>" + "singIn");
                         signIn(parrams);
                         break;
                     }
@@ -61,6 +59,7 @@ class ClientHandler extends Thread {
                         break;
                     }
                     case "homeworkList": {
+                        System.out.println("android :::"+message);
                         homeworkList(parrams[1],parrams[2]);
                         break;
                     }
@@ -93,6 +92,7 @@ class ClientHandler extends Thread {
     //*************************************************************
     public void signUp(String[] parrams) throws IOException {
         if (Server.position.containsKey(parrams[1])) {
+            System.out.println("ClientHandler >>> repeated username " + parrams[1]);
             outputStream.writeUTF("error:repeatedUsername");
             outputStream.flush();
         } else {
@@ -109,6 +109,7 @@ class ClientHandler extends Thread {
             Person person1 = new Person(parrams[1], parrams[2]);
             Server.people.add(person1);
             Server.position.put(parrams[1], Server.people.size() - 1);
+            System.out.println("ClientHandler >>> Register success" + parrams[1] + "  " + parrams[2]);
             outputStream.writeUTF("signUp:success");
             outputStream.flush();
         }
@@ -117,17 +118,22 @@ class ClientHandler extends Thread {
     //**********************************************************************
     public void signIn(String[] parrams) throws IOException {
         Person person;
+        // checking username
         if (Server.position.containsKey(parrams[1])) {
             person = Server.people.get(Server.position.get(parrams[1]));
             if (person.getPassword().equals(parrams[2])) {
                 person.setLoggedIn(true);
-                outputStream.writeUTF("signIn:success");
+                System.out.println("ClientHandle Success sign in >>> " + parrams[1] + "  " + parrams[2]);
+                outputStream.writeUTF("signIn:" + parrams[1] + ":success");
+                outputStream.flush();
             } else {
-                outputStream.writeUTF("error:wrongPassword");
+                System.out.println("ClientHandler error sign in >>> " + parrams[1] + "  " + parrams[2]);
+                outputStream.writeUTF("signIn:" + parrams[1] + ":error");
                 outputStream.flush();
             }
-        } else {
-            outputStream.writeUTF("error:wrongUsername");
+        }
+        else {
+            outputStream.writeUTF("signIn:" + parrams[1] + ":error");
             outputStream.flush();
         }
     }
@@ -259,6 +265,7 @@ class ClientHandler extends Thread {
     }
 
     //********************************************************
+
     public static void classList(String className) throws IOException {
         Person p = Server.people.get(Server.position.get(className));
         String result = "classList:";
@@ -271,15 +278,17 @@ class ClientHandler extends Thread {
     }
 
     //**********************************************************
-    public static void homeworkList(String className,String username) throws IOException {
 
+    public static void homeworkList(String className,String username) throws IOException {
         String result = "homeworkList:";
         Person person = Server.people.get(Server.position.get(username));
         Class c = Server.classes.get(Server.classPositions.get(className));
         if(c.getTAs().contains(person)){
+            System.out.println("in if of homeworkList");
             result = result.concat("teacher:") ;
         }
         else {
+            System.out.println("in else homeworkList");
             result = result.concat("student:");
         }
 
