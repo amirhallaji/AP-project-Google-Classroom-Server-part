@@ -25,17 +25,13 @@ class Server {
             DataInputStream serverDataInputStream = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream serverDataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
 
-            // ***  message = serverDataInputStream.readUTF();
-            // ***   ClientHandler.msg = message;
-            // ***   System.out.println("Server >>>>>>>>>"+message);
-
+            //Devoting new thread for each Client
             Thread thread = new ClientHandler(clientSocket,serverDataInputStream,serverDataOutputStream);
             thread.start();
-
         }
     }
     //****************************************
-    public static String codeGenerator(){
+    public static String codeGenerator(){ //method for devoting a unique code for each class
         StringBuilder code = new StringBuilder() ;
         for (int i = 0; i < 5 ; i++) {
             int number = (int)((Math.random()) * 26) + 97;

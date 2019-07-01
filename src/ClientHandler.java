@@ -61,9 +61,13 @@ class ClientHandler extends Thread {
                         break;
                     }
                     case "homeworkList": {
-                        homeworkList(parrams[1]);
+                        homeworkList(parrams[1],parrams[2]);
                         break;
                     }
+                    case "people" : {
+                        people(parrams[1]);
+                    }
+
                 }
             }
         } catch (IOException e) {
@@ -141,6 +145,7 @@ class ClientHandler extends Thread {
                 break;
             }
         }
+        c.getTAs().add(person);
         Server.classCodes.put(code, Server.classes.size());
         Server.classes.add(c);
         Server.classPositions.put(c.getName(), Server.classes.size() - 1);
@@ -165,6 +170,7 @@ class ClientHandler extends Thread {
 
     //****************************************************************
     public static void joinClass(String[] s) {
+
         System.out.println("SERVER::" + s[0] + s[1] + s[2]);
         if (!Server.classCodes.containsKey(s[2])) {
             try {
@@ -194,14 +200,9 @@ class ClientHandler extends Thread {
     public static void showClassProfile(String code) throws IOException {
         Class c = Server.classes.get(Server.classCodes.get(code));
 
-        //String message = inputStream.readUTF();
-        if (message.equals("streams")) {
-            streams();
-        } else if (message.equals("classWork")) {
-            classWork(c);
-        } else if (message.equals("people")) {
-            people(c);
-        }
+//        } else if (message.equals("classWork")) {
+//            classWork(c);
+//
 
 
     }
@@ -220,11 +221,6 @@ class ClientHandler extends Thread {
 
         Class c = Server.classes.get(Server.classCodes.get(code));
         c.getHomework().add(homework);
-
-    }
-
-    //***************************************************************
-    public static void streams() {
 
     }
 
@@ -263,8 +259,8 @@ class ClientHandler extends Thread {
     }
 
     //********************************************************
-    public static void classList(String s) throws IOException {
-        Person p = Server.people.get(Server.position.get(s));
+    public static void classList(String className) throws IOException {
+        Person p = Server.people.get(Server.position.get(className));
         String result = "classList:";
         for (int i = 0; i < p.getPersonClasses().size(); i++) {
             result = result.concat(p.getPersonClasses().get(i).getName() + ":" + p.getPersonClasses().get(i).getDescription() + ":");
@@ -275,16 +271,45 @@ class ClientHandler extends Thread {
     }
 
     //**********************************************************
-    public static void homeworkList(String s) throws IOException {
-        Class c = Server.classes.get(Server.classPositions.get(s));
+    public static void homeworkList(String className,String username) throws IOException {
+
         String result = "homeworkList:";
+        Person person = Server.people.get(Server.position.get(username));
+        Class c = Server.classes.get(Server.classPositions.get(className));
+        if(c.getTAs().contains(person)){
+            result = result.concat("teacher:") ;
+        }
+        else {
+            result = result.concat("student:");
+        }
+
         for (int i = 0; i < c.getHomework().size(); i++) {
             result = result.concat(c.getHomework().get(i).getTopic() + ":" + c.getHomework().get(i).getDate() + ":" + c.getHomework().get(i).getComments() + ":");
         }
-        //result = result.concat("physic:201971:2:") ;
         System.out.println("server >>>>>" + result);
         outputStream.writeUTF(result);
         outputStream.flush();
     }
     //**********************************************************
+
+    public static void people(String s) throws IOException{
+        Class c = Server.classes.get(Server.classPositions.get(s));
+        String result = "people:" ;
+
+        for (int i = 0; i < c.getTAs().size() ; i++) {
+            result = result.concat(c.getTAs().get(i).getUsername() + "@") ;
+        }
+
+        result = result.concat(":") ;
+
+        for (int i = 0; i < c.getStudents().size() ; i++) {
+            result = result.concat(c.getStudents().get(i).getUsername() + "@") ;
+        }
+
+        outputStream.writeUTF(result);
+        outputStream.flush();
+    }
+
+    //***********************************************************
+
 }
