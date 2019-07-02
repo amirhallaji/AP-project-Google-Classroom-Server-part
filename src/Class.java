@@ -21,6 +21,11 @@ class Class implements Serializable {
         this.number = number;
     }
 
+    @Override
+    public String toString() {
+        return this.code ;
+    }
+
     public String getCode() {
         return code;
     }

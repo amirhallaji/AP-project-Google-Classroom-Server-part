@@ -18,17 +18,15 @@ class ClientHandler extends Thread {
         try {
             while (true) {
                 message = inputStream.readUTF();
-               // System.out.println("message >>>" + message);
+                System.out.println("Message((Android)) >>>>>   " + message);
                 String[] parrams = message.split(":");
-                //System.out.println(parrams[0]);
-
                 switch (parrams[0]) {
                     case "userChecker": {
                         userChecker(parrams);
                         break;
                     }
                     case "signIn": {
-                        System.out.println("Server >>>>>>>>>>>" + "singIn");
+                        //System.out.println("Server >>>>>>>>>>>" + "singIn");
                         signIn(parrams);
                         break;
                     }
@@ -37,7 +35,7 @@ class ClientHandler extends Thread {
                         break;
                     }
                     case "createClass": {
-                        System.out.println("##create class from android");
+                        //System.out.println("##create class from android");
                         createClass(parrams);
                         break;
                     }
@@ -71,7 +69,7 @@ class ClientHandler extends Thread {
             }
         } catch (IOException e) {
 //            e.printStackTrace();
-            System.out.println(e);
+            //System.out.println(e);
         }
     }
 
@@ -92,7 +90,7 @@ class ClientHandler extends Thread {
     //*************************************************************
     public void signUp(String[] parrams) throws IOException {
         if (Server.position.containsKey(parrams[1])) {
-            System.out.println("ClientHandler >>> repeated username " + parrams[1]);
+            System.out.println("Into signUp method :" + parrams[1]);
             outputStream.writeUTF("error:repeatedUsername");
             outputStream.flush();
         } else {
@@ -109,7 +107,7 @@ class ClientHandler extends Thread {
             Person person1 = new Person(parrams[1], parrams[2]);
             Server.people.add(person1);
             Server.position.put(parrams[1], Server.people.size() - 1);
-            System.out.println("ClientHandler >>> Register success" + parrams[1] + "  " + parrams[2]);
+            System.out.println("ClientHandler >>> Register success(signUp method)" + parrams[1] + "  " + parrams[2]);
             outputStream.writeUTF("signUp:success");
             outputStream.flush();
         }
@@ -118,16 +116,17 @@ class ClientHandler extends Thread {
     //**********************************************************************
     public void signIn(String[] parrams) throws IOException {
         Person person;
+        System.out.println("Into signIn method : " + parrams[1]);
         // checking username
         if (Server.position.containsKey(parrams[1])) {
             person = Server.people.get(Server.position.get(parrams[1]));
             if (person.getPassword().equals(parrams[2])) {
                 person.setLoggedIn(true);
-                System.out.println("ClientHandle Success sign in >>> " + parrams[1] + "  " + parrams[2]);
+                System.out.println("ClientHandle Success sign in >>>(signIn method) " + parrams[1] + "  " + parrams[2]);
                 outputStream.writeUTF("signIn:" + parrams[1] + ":success");
                 outputStream.flush();
             } else {
-                System.out.println("ClientHandler error sign in >>> " + parrams[1] + "  " + parrams[2]);
+                System.out.println("ClientHandler error sign in >>>(signIn method) " + parrams[1] + "  " + parrams[2]);
                 outputStream.writeUTF("signIn:" + parrams[1] + ":error");
                 outputStream.flush();
             }
@@ -141,44 +140,39 @@ class ClientHandler extends Thread {
     //************************************************************
     public static void createClass(String[] s) throws IOException {
         Person person = Server.people.get(Server.position.get(s[1]));
-        Class c = new Class(person, s[2], s[3], s[4]); //teacher(user):name:description:number
-        person.getPersonClasses().add(c);
+        Class c = new Class(person, s[2], s[3], s[4]); //teacher(user):name:description:room number
+        person.getPersonClasses().add(c); //the creator of the class
+        Server.classes.add(c) ;
+
         String code;
+
         while (true) {
             code = Server.codeGenerator();
-            if (!Server.classCodes.containsKey(code)) {
+            if (!Server.classPositions.containsKey(code)) {
                 c.setCode(code);
                 break;
             }
         }
+        Server.classPositions.put(code,Server.classes.size()-1) ;
         c.getTAs().add(person);
-        Server.classCodes.put(code, Server.classes.size());
-        Server.classes.add(c);
-        Server.classPositions.put(c.getName(), Server.classes.size() - 1);
-
+        System.out.println("our classLists" + Server.classes.toString());
+        System.out.println("person arrayList" + Server.people.toString());
+        System.out.println("our hashMap for class" + Server.classPositions.toString());
         try {
             outputStream.writeUTF("createClass:success:" + c.getCode());
             outputStream.flush();
             System.out.println("createClass Successful " + c.getCode());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Exception >> " + e);
         }
 
-        sendClassList(person);
-    }
-
-    //*************************************************************
-    public static void sendClassList(Person person) throws IOException {
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-        System.out.println("***object ***" + person.getPersonClasses());
-        objectOutputStream.writeObject(person.getPersonClasses());
     }
 
     //****************************************************************
     public static void joinClass(String[] s) {
 
         System.out.println("SERVER::" + s[0] + s[1] + s[2]);
-        if (!Server.classCodes.containsKey(s[2])) {
+        if (!Server.classPositions.containsKey(s[2])) {
             try {
                 String s1 = "joinClass:error";
                 outputStream.writeUTF(s1);
@@ -189,14 +183,14 @@ class ClientHandler extends Thread {
             }
         } else {
             Person p = Server.people.get(Server.position.get(s[1]));
-            Class c = Server.classes.get(Server.classCodes.get(s[2]));
+            Class c = Server.classes.get(Server.classPositions.get(s[2]));
             c.getStudents().add(p);
             try {
                 outputStream.writeUTF("joinClass:success:" + c.getName());
                 outputStream.flush();
                 System.out.println("SERVER join class success");
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
 
@@ -204,13 +198,10 @@ class ClientHandler extends Thread {
 
     //*********************************************************************
     public static void showClassProfile(String code) throws IOException {
-        Class c = Server.classes.get(Server.classCodes.get(code));
-
+        Class c = Server.classes.get(Server.classPositions.get(code));
 //        } else if (message.equals("classWork")) {
 //            classWork(c);
 //
-
-
     }
 
     //******************************************************************
@@ -224,8 +215,9 @@ class ClientHandler extends Thread {
         String code = s[7];
 
         Homework homework = new Homework(name, description, point, date, time, topic);
-
-        Class c = Server.classes.get(Server.classCodes.get(code));
+        System.out.println("Before exception " + code);
+        System.out.println("Our ClassList of classes" + Server.classes.toString());
+        Class c = Server.classes.get(Server.classPositions.get(code));
         c.getHomework().add(homework);
 
     }
@@ -279,23 +271,23 @@ class ClientHandler extends Thread {
 
     //**********************************************************
 
-    public static void homeworkList(String className,String username) throws IOException {
+    public static void homeworkList(String classCode,String username) throws IOException {
+        System.out.println("In the homeworkList function");
         String result = "homeworkList:";
         Person person = Server.people.get(Server.position.get(username));
-        Class c = Server.classes.get(Server.classPositions.get(className));
+        //System.out.println("$$$Code: " + classCode);
+        Class c = Server.classes.get(Server.classPositions.get(classCode));
         if(c.getTAs().contains(person)){
-            System.out.println("in if of homeworkList");
             result = result.concat("teacher:") ;
         }
         else {
-            System.out.println("in else homeworkList");
             result = result.concat("student:");
         }
 
         for (int i = 0; i < c.getHomework().size(); i++) {
             result = result.concat(c.getHomework().get(i).getTopic() + ":" + c.getHomework().get(i).getDate() + ":" + c.getHomework().get(i).getComments() + ":");
         }
-        System.out.println("server >>>>>" + result);
+        System.out.println("server (homeworkList)>>>>>" + result);
         outputStream.writeUTF(result);
         outputStream.flush();
     }

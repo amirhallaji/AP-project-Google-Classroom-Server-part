@@ -5,13 +5,15 @@ import java.util.*;
 class Server {
     static ArrayList<ClientHandler> activeClient = new ArrayList<>();
     static ArrayList<Person> people = new ArrayList<>();
-    static HashMap<String,Integer> position = new HashMap<>();
+    static HashMap<String,Integer> position = new HashMap<>(); //<Username,its position>
+
     //Related to Classes
-    static ArrayList<Class>classes = new ArrayList<>();
-    static HashMap<String,Integer>classPositions = new HashMap<>() ;
-    static HashMap<String,Integer> classCodes = new HashMap();
+    static ArrayList<Class>classes = new ArrayList<>(); //all of classes used for generating unique code
+    static HashMap<String,Integer>classPositions = new HashMap<>() ; //<The Class Code,its position>
+    //
     static ArrayList<Homework> homework = new ArrayList<>();
-    static HashMap<String,String> homeworkTopic = new HashMap<>();    // code,topic
+    static HashMap<String,String> homeworkTopic = new HashMap<>();// code,topic
+    //static HashMap<String,Class> code
     static String message;
 
     public static void main(String[] args) throws IOException {
@@ -21,7 +23,7 @@ class Server {
 
         while (true){
             clientSocket = serverSocket.accept();
-            System.out.println("User connected");
+            //System.out.println("User connected");
             DataInputStream serverDataInputStream = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream serverDataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
 
