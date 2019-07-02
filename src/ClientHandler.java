@@ -57,11 +57,11 @@ class ClientHandler extends Thread {
                         break;
                     }
                     case "homeworkList": {
-                        System.out.println("android :::"+message);
-                        homeworkList(parrams[1],parrams[2]);
+                        System.out.println("android :::" + message);
+                        homeworkList(parrams[1], parrams[2]);
                         break;
                     }
-                    case "people" : {
+                    case "people": {
                         people(parrams[1]);
                     }
 
@@ -75,16 +75,23 @@ class ClientHandler extends Thread {
 
     //****************************************************************
     public void userChecker(String[] parrams) throws IOException {
-        String result;
-        if (Server.position.containsKey(parrams[1])) {
-            result = "repeated";
-            outputStream.writeUTF("checkResult:repeated");
-        } else {
-            result = "unique";
-            outputStream.writeUTF("checkResult:unique");
+        String result = "userChecker:";
+        if(!parrams[1].equals("")) {
+            result = result.concat(parrams[1] + ":");
+            if (Server.position.containsKey(parrams[1])) {
+                result = result.concat("repeated");
+            } else {
+                result = result.concat("unique");
+            }
+            System.out.println("In the user checker : " + result);
+            outputStream.writeUTF(result);
+            outputStream.flush();
         }
-        outputStream.writeUTF(result);
-        System.out.println(result);
+        else {
+            result = result.concat("empty:empty");
+            outputStream.writeUTF(result);
+            outputStream.flush();
+        }
     }
 
     //*************************************************************
@@ -130,8 +137,7 @@ class ClientHandler extends Thread {
                 outputStream.writeUTF("signIn:" + parrams[1] + ":error");
                 outputStream.flush();
             }
-        }
-        else {
+        } else {
             outputStream.writeUTF("signIn:" + parrams[1] + ":error");
             outputStream.flush();
         }
@@ -142,7 +148,7 @@ class ClientHandler extends Thread {
         Person person = Server.people.get(Server.position.get(s[1]));
         Class c = new Class(person, s[2], s[3], s[4]); //teacher(user):name:description:room number
         person.getPersonClasses().add(c); //the creator of the class
-        Server.classes.add(c) ;
+        Server.classes.add(c);
 
         String code;
 
@@ -153,7 +159,7 @@ class ClientHandler extends Thread {
                 break;
             }
         }
-        Server.classPositions.put(code,Server.classes.size()-1) ;
+        Server.classPositions.put(code, Server.classes.size() - 1);
         c.getTAs().add(person);
         System.out.println("our classLists" + Server.classes.toString());
         System.out.println("person arrayList" + Server.people.toString());
@@ -209,9 +215,9 @@ class ClientHandler extends Thread {
         String name = s[1];
         String description = s[2];
         String point = s[3];
-        String date = s[4];
-        String time = s[5];
-        String topic = s[6];
+        String topic = s[4];
+        String date = s[5];
+        String time = s[6];
         String code = s[7];
 
         Homework homework = new Homework(name, description, point, date, time, topic);
@@ -219,7 +225,6 @@ class ClientHandler extends Thread {
         System.out.println("Our ClassList of classes" + Server.classes.toString());
         Class c = Server.classes.get(Server.classPositions.get(code));
         c.getHomework().add(homework);
-
     }
 
     //***************************************************************
@@ -271,40 +276,40 @@ class ClientHandler extends Thread {
 
     //**********************************************************
 
-    public static void homeworkList(String classCode,String username) throws IOException {
+    public static void homeworkList(String classCode, String username) throws IOException {
         System.out.println("In the homeworkList function");
         String result = "homeworkList:";
         Person person = Server.people.get(Server.position.get(username));
         //System.out.println("$$$Code: " + classCode);
         Class c = Server.classes.get(Server.classPositions.get(classCode));
-        if(c.getTAs().contains(person)){
-            result = result.concat("teacher:") ;
-        }
-        else {
+        if (c.getTAs().contains(person)) {
+            result = result.concat("teacher:");
+        } else {
             result = result.concat("student:");
         }
 
         for (int i = 0; i < c.getHomework().size(); i++) {
-            result = result.concat(c.getHomework().get(i).getTopic() + ":" + c.getHomework().get(i).getDate() + ":" + c.getHomework().get(i).getComments() + ":");
+            result = result.concat(c.getHomework().get(i).getTitle() + ":" + c.getHomework().get(i).getDate() + ":" + c.getHomework().get(i).getNumberOfComments() + ":");
         }
+        System.out.println("CHECK date" + c.getHomework().get(0).getDate());
         System.out.println("server (homeworkList)>>>>>" + result);
         outputStream.writeUTF(result);
         outputStream.flush();
     }
     //**********************************************************
 
-    public static void people(String s) throws IOException{
+    public static void people(String s) throws IOException {
         Class c = Server.classes.get(Server.classPositions.get(s));
-        String result = "people:" ;
+        String result = "people:";
 
-        for (int i = 0; i < c.getTAs().size() ; i++) {
-            result = result.concat(c.getTAs().get(i).getUsername() + "@") ;
+        for (int i = 0; i < c.getTAs().size(); i++) {
+            result = result.concat(c.getTAs().get(i).getUsername() + "@");
         }
 
-        result = result.concat(":") ;
+        result = result.concat(":");
 
-        for (int i = 0; i < c.getStudents().size() ; i++) {
-            result = result.concat(c.getStudents().get(i).getUsername() + "@") ;
+        for (int i = 0; i < c.getStudents().size(); i++) {
+            result = result.concat(c.getStudents().get(i).getUsername() + "@");
         }
 
         outputStream.writeUTF(result);

@@ -19,6 +19,15 @@ public class Homework {
         this.time = time ;
         this.topic = topic;
         this.comments = new ArrayList<>() ;
+        numberOfComments = 0 ;
+    }
+
+    public Integer getNumberOfComments() {
+        return numberOfComments;
+    }
+
+    public void setNumberOfComments(Integer numberOfComments) {
+        this.numberOfComments = numberOfComments;
     }
 
     public String getTitle() {
