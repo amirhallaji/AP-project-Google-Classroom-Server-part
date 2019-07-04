@@ -52,7 +52,7 @@ class ClientHandler extends Thread {
                         break;
                     }
                     case "classList": {
-                      //  System.out.println("into classList");
+                        //  System.out.println("into classList");
                         classList(parrams[1]);
                         break;
                     }
@@ -68,12 +68,20 @@ class ClientHandler extends Thread {
                         homeworkProfile(parrams[1]);
                         break;
                     }
-                    case  "imageProfile": {
+                    case "imageProfile": {
                         imageProfile(parrams);
                         break;
                     }
                     case "imageAssignment": {
                         //imageAssignment(message);
+                        break;
+                    }
+                    case "classSetting": {
+                        classSetting(parrams);
+                        break;
+                    }
+                    case "classInfo": {
+                        classInfo(parrams);
                         break;
                     }
 
@@ -84,7 +92,6 @@ class ClientHandler extends Thread {
             //System.out.println(e);
         }
     }
-
 
     //****************************************************************
     public void userChecker(String[] parrams) throws IOException {
@@ -130,7 +137,7 @@ class ClientHandler extends Thread {
             Person person1 = new Person(parrams[1], parrams[2]);
             Server.people.add(person1);
             Server.position.put(parrams[1], Server.people.size() - 1);
-           // System.out.println("ClientHandler >>> Register success(signUp method)" + parrams[1] + "  " + parrams[2]);
+            // System.out.println("ClientHandler >>> Register success(signUp method)" + parrams[1] + "  " + parrams[2]);
             outputStream.writeUTF("signUp:" + parrams[1] + ":success");
             outputStream.flush();
             System.out.println(" -- SERVER >>> " + "signUp:success");
@@ -146,12 +153,12 @@ class ClientHandler extends Thread {
             person = Server.people.get(Server.position.get(parrams[1]));
             if (person.getPassword().equals(parrams[2])) {
                 person.setLoggedIn(true);
-               // System.out.println("ClientHandle Success sign in >>>(signIn method) " + parrams[1] + "  " + parrams[2]);
+                // System.out.println("ClientHandle Success sign in >>>(signIn method) " + parrams[1] + "  " + parrams[2]);
                 outputStream.writeUTF("signIn:" + parrams[1] + ":success");
                 outputStream.flush();
                 System.out.println(" -- SERVER >>> " + "signIn:" + parrams[1] + "success");
             } else {
-              //  System.out.println("ClientHandler error sign in >>>(signIn method) " + parrams[1] + "  " + parrams[2]);
+                //  System.out.println("ClientHandler error sign in >>>(signIn method) " + parrams[1] + "  " + parrams[2]);
                 outputStream.writeUTF("signIn:" + parrams[1] + ":error");
                 outputStream.flush();
                 System.out.println(" -- SERVER >>> " + "signIn:" + parrams[1] + ":error");
@@ -181,16 +188,16 @@ class ClientHandler extends Thread {
         }
         Server.classPositions.put(code, Server.classes.size() - 1);
         c.getTAs().add(person);
-       // System.out.println("our classLists" + Server.classes.toString());
-      //  System.out.println("person arrayList" + Server.people.toString());
-       // System.out.println("our hashMap for class" + Server.classPositions.toString());
+        // System.out.println("our classLists" + Server.classes.toString());
+        //  System.out.println("person arrayList" + Server.people.toString());
+        // System.out.println("our hashMap for class" + Server.classPositions.toString());
         try {
             outputStream.writeUTF("createClass:success:" + c.getClassCode());
             outputStream.flush();
             System.out.println(" -- SERVER >>> " + "createClass:success:" + c.getClassCode());
-          //  System.out.println("createClass Successful " + c.getHomeworkCode());
+            //  System.out.println("createClass Successful " + c.getHomeworkCode());
         } catch (IOException e) {
-          //  System.out.println("Exception >> " + e);
+            //  System.out.println("Exception >> " + e);
         }
 
     }
@@ -198,13 +205,13 @@ class ClientHandler extends Thread {
     //****************************************************************
     public static void joinClass(String[] s) {
 
-       //System.out.println("SERVER::" + s[0] + s[1] + s[2]);
+        //System.out.println("SERVER::" + s[0] + s[1] + s[2]);
         if (!Server.classPositions.containsKey(s[2])) {
             try {
                 String s1 = "joinClass:error";
                 outputStream.writeUTF(s1);
                 System.out.println("SERVER >>> " + s1);
-               // System.out.println("//////" + s1);
+                // System.out.println("//////" + s1);
                 outputStream.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -217,7 +224,7 @@ class ClientHandler extends Thread {
                 outputStream.writeUTF("joinClass:success:" + c.getName());
                 outputStream.flush();
                 System.out.println(" -- SERVER >>> " + "joinClass:success:" + c.getName());
-              //  System.out.println("SERVER join class success");
+                //  System.out.println("SERVER join class success");
             } catch (IOException e) {
                 //e.printStackTrace();
             }
@@ -242,7 +249,7 @@ class ClientHandler extends Thread {
         String date = s[5];
         String time = s[6];
         String classCode = s[7];
-        String homeworkCode ; //Devoting a Unique Code to each Homework to Prevent Name Conflicts
+        String homeworkCode; //Devoting a Unique Code to each Homework to Prevent Name Conflicts
         while (true) {
             String string = Server.codeGenerator();
             if (!Server.homeworkCode.contains(string)) {
@@ -252,13 +259,13 @@ class ClientHandler extends Thread {
         }
 
 
-        Homework homework = new Homework(name, description, point, date, time, topic , homeworkCode);
+        Homework homework = new Homework(name, description, point, date, time, topic, homeworkCode);
         Class c = Server.classes.get(Server.classPositions.get(classCode));
         c.getHomework().add(homework);
-        c.getHomework().get(c.getHomework().size()-1).setHomeworkCode(homeworkCode);
+        c.getHomework().get(c.getHomework().size() - 1).setHomeworkCode(homeworkCode);
 
         Server.homework.add(homework);
-        Server.homeworkPositions.put(homeworkCode,Server.homework.size()-1) ;
+        Server.homeworkPositions.put(homeworkCode, Server.homework.size() - 1);
 
         outputStream.writeUTF("createHomework:success:" + homeworkCode + ":");
         System.out.println(" -- SERVER >>>" + "createHomework:success:" + homeworkCode + ":");
@@ -290,7 +297,7 @@ class ClientHandler extends Thread {
         for (int i = 0; i < p.getPersonClasses().size(); i++) {
             result = result.concat(p.getPersonClasses().get(i).getName() + ":" + p.getPersonClasses().get(i).getDescription() + ":" + p.getPersonClasses().get(i).getClassCode() + ":");
         }
-      //  System.out.println("Server:classList >>> " + result);
+        //  System.out.println("Server:classList >>> " + result);
         outputStream.writeUTF(result);
         outputStream.flush();
         System.out.println(" -- SERVER >>> " + result);
@@ -299,7 +306,7 @@ class ClientHandler extends Thread {
     //**********************************************************
 
     public static void homeworkList(String classCode, String username) throws IOException {
-       // System.out.println("In the homeworkList function");
+        // System.out.println("In the homeworkList function");
         String result = "homeworkList:";
         Person person = Server.people.get(Server.position.get(username));
         //System.out.println("$$$Code: " + classCode);
@@ -313,8 +320,8 @@ class ClientHandler extends Thread {
         for (int i = 0; i < c.getHomework().size(); i++) {
             result = result.concat(c.getHomework().get(i).getTitle() + ":" + c.getHomework().get(i).getDate() + ":" + c.getHomework().get(i).getNumberOfComments() + ":" + c.getHomework().get(i).getHomeworkCode() + ":");
         }
-      //  System.out.println("CHECK date" + c.getHomework().get(0).getDate());
-       // System.out.println("server (homeworkList)>>>>>" + result);
+        //  System.out.println("CHECK date" + c.getHomework().get(0).getDate());
+        // System.out.println("server (homeworkList)>>>>>" + result);
         outputStream.writeUTF(result);
         outputStream.flush();
         System.out.println(" -- SERVER >>>" + result);
@@ -337,26 +344,25 @@ class ClientHandler extends Thread {
 
         outputStream.writeUTF(result);
         outputStream.flush();
-        System.out.println(" -- SERVER >> " + result);    }
+        System.out.println(" -- SERVER >> " + result);
+    }
 
     //***********************************************************
     public void homeworkProfile(String homeworkCode) throws IOException {
-        String result = "homeworkProfile:" ;
-        Homework homework = Server.homework.get(Server.homeworkPositions.get(homeworkCode)) ;
+        String result = "homeworkProfile:";
+        Homework homework = Server.homework.get(Server.homeworkPositions.get(homeworkCode));
 
         result = result.concat(homework.getHomeworkCode() + ":" + homework.getTitle() + ":");
-        if (homework.getComments().size() == 0){
+        if (homework.getComments().size() == 0) {
             result = result.concat("noComments");
-        }
-        else {
+        } else {
             for (int i = 0; i < homework.getComments().size(); i++) {
                 result = result.concat(homework.getComments().get(i) + "@");
             }
         }
-        if (homework.getAssignment().equals("   ")){
+        if (homework.getAssignment().equals("   ")) {
             result = result.concat(":noAssignments");
-        }
-        else {
+        } else {
             result = result.concat(":" + homework.getAssignment());
         }
         outputStream.writeUTF(result);
@@ -365,18 +371,37 @@ class ClientHandler extends Thread {
     }
     //*************************************************************
 
-    public void imageAssignment(String message) {
-        String[] parrams = message.split(":") ;
+    private void imageAssignment(String message) {
+        String[] parrams = message.split(":");
 
-        String image = parrams[1] ;
+        String image = parrams[1];
     }
 
     //**************************************************************
     private void imageProfile(String[] parrams) {
         String result = parrams[0];
-        result = result.concat( ":" + parrams[1] + ":" + parrams[2] );
+        result = result.concat(":" + parrams[1] + ":" + parrams[2]);
         System.out.println("-- SERVER >> " + result);
     }
     //*************************************************************
 
+    private void classSetting(String[] parrams) {
+
+    }
+
+    //**************************************************************
+
+    private void classInfo(String[] parrams) throws IOException {
+        String result = "classInfo:";
+
+        String classCode = parrams[1];
+        Class c = Server.classes.get(Server.classPositions.get(classCode));
+
+        result = result.concat(c.getName() + ":" + c.getDescription() + ":" + c.getNumber() + ":" +c.getClassCode());
+        outputStream.writeUTF(result);
+        System.out.println("-- SERVER >> " + result);
+        outputStream.flush();
+    }
+
+    //*****************************************************************
 }
