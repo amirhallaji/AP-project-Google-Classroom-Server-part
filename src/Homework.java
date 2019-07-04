@@ -10,6 +10,8 @@ public class Homework {
     private String homeworkCode;
     private Integer numberOfComments;
     private ArrayList<Comment> comments;
+    private String assignment ;
+    private String imageAssignment ;
 
     public Homework(String title, String description, String points, String date, String time, String topic, String code) {
         this.title = title;
@@ -18,6 +20,7 @@ public class Homework {
         this.date = date;
         this.time = time;
         this.topic = topic;
+        this.assignment = "";
         this.comments = new ArrayList<>();
         numberOfComments = 0;
     }
@@ -92,5 +95,25 @@ public class Homework {
 
     public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getAssignment() {
+        return assignment;
+    }
+
+    public void setAssignment(String assignment) {
+        this.assignment = assignment;
+    }
+
+    public String getImageAssignment() {
+        return imageAssignment;
+    }
+
+    public void setImageAssignment(String imageAssignment) {
+        this.imageAssignment = imageAssignment;
     }
 }

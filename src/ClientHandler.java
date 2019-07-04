@@ -68,11 +68,12 @@ class ClientHandler extends Thread {
                         homeworkProfile(parrams[1]);
                         break;
                     }
-                    case  "profileImage": {
+                    case  "imageProfile": {
+                        imageProfile(parrams);
                         break;
                     }
-                    case "assignmentImage": {
-                        //assignmentImage(message);
+                    case "imageAssignment": {
+                        //imageAssignment(message);
                         break;
                     }
 
@@ -83,6 +84,8 @@ class ClientHandler extends Thread {
             //System.out.println(e);
         }
     }
+
+
     //****************************************************************
     public void userChecker(String[] parrams) throws IOException {
         String result = "userChecker:";
@@ -109,7 +112,7 @@ class ClientHandler extends Thread {
     public void signUp(String[] parrams) throws IOException {
         if (Server.position.containsKey(parrams[1])) {
             //System.out.println("Into signUp method :" + parrams[1]);
-            outputStream.writeUTF("error:repeatedUsername");
+            outputStream.writeUTF("error:" + parrams[1] + ":repeatedUsername");
             outputStream.flush();
             System.out.println(" -- SERVER >>> " + "error:repeatedUsername");
         } else {
@@ -128,7 +131,7 @@ class ClientHandler extends Thread {
             Server.people.add(person1);
             Server.position.put(parrams[1], Server.people.size() - 1);
            // System.out.println("ClientHandler >>> Register success(signUp method)" + parrams[1] + "  " + parrams[2]);
-            outputStream.writeUTF("signUp:success");
+            outputStream.writeUTF("signUp:" + parrams[1] + ":success");
             outputStream.flush();
             System.out.println(" -- SERVER >>> " + "signUp:success");
         }
@@ -279,24 +282,6 @@ class ClientHandler extends Thread {
         System.out.println(" -- SERVER >>> " + message);
     }
 
-    //**********************************************************
-    public static void people(Class c) throws IOException {
-
-        String message = "classPeople:";
-        message = message.concat(c.getTeacher().getUsername() + "@");
-
-        for (int i = 0; i < c.getTAs().size(); i++) {
-            message = message.concat(c.getTAs().get(i).getUsername() + "@");
-        }
-        message = message.concat(":");
-        for (int i = 0; i < c.getStudents().size(); i++) {
-            message = message.concat(c.getStudents().get(i).getUsername() + "@");
-        }
-        outputStream.writeUTF(message);
-        outputStream.flush();
-        System.out.println(" -- SERVER >>> " + message);
-    }
-
     //********************************************************
 
     public static void classList(String className) throws IOException {
@@ -355,20 +340,43 @@ class ClientHandler extends Thread {
         System.out.println(" -- SERVER >> " + result);    }
 
     //***********************************************************
-    public void homeworkProfile(String homeworkCode) {
+    public void homeworkProfile(String homeworkCode) throws IOException {
         String result = "homeworkProfile:" ;
         Homework homework = Server.homework.get(Server.homeworkPositions.get(homeworkCode)) ;
 
+        result = result.concat(homework.getHomeworkCode() + ":" + homework.getTitle() + ":");
+        if (homework.getComments().size() == 0){
+            result = result.concat("noComments");
+        }
+        else {
+            for (int i = 0; i < homework.getComments().size(); i++) {
+                result = result.concat(homework.getComments().get(i) + "@");
+            }
+        }
+        if (homework.getAssignment().equals("   ")){
+            result = result.concat(":noAssignments");
+        }
+        else {
+            result = result.concat(":" + homework.getAssignment());
+        }
+        outputStream.writeUTF(result);
+        System.out.println(" -- SERVER >> " + result);
+        outputStream.flush();
     }
     //*************************************************************
 
-    public void assignmentImage(String message) {
+    public void imageAssignment(String message) {
         String[] parrams = message.split(":") ;
 
         String image = parrams[1] ;
     }
 
-
-
+    //**************************************************************
+    private void imageProfile(String[] parrams) {
+        String result = parrams[0];
+        result = result.concat( ":" + parrams[1] + ":" + parrams[2] );
+        System.out.println("-- SERVER >> " + result);
+    }
+    //*************************************************************
 
 }
