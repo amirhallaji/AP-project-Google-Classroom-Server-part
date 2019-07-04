@@ -85,4 +85,16 @@ class Class implements Serializable {
     public void setStudents(ArrayList<Person> students) {
         this.students = students;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
 }

@@ -385,8 +385,26 @@ class ClientHandler extends Thread {
     }
     //*************************************************************
 
-    private void classSetting(String[] parrams) {
+    private void classSetting(String[] parrams) throws IOException {
+        String classCode = parrams[1];
+        String title = parrams[2];
+        String description = parrams[3];
+        String roomNumber = parrams[4];
 
+        Class c = Server.classes.get(Server.classPositions.get(classCode));
+
+        if (!title.equals("noTitle")){
+            c.setName(title);
+        }
+        if (!description.equals("noDescription")){
+            c.setDescription(description);
+        }
+        if (!roomNumber.equals("noRoomNumber")){
+            c.setName(roomNumber);
+        }
+
+        outputStream.writeUTF("classSetting:success");
+        outputStream.flush();
     }
 
     //**************************************************************
