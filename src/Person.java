@@ -49,5 +49,11 @@ public class Person implements Serializable {
         return isLoggedIn;
     }
 
+    public void setIamgeProfile(String iamgeProfile) {
+        this.iamgeProfile = iamgeProfile;
+    }
 
+    public String getIamgeProfile() {
+        return iamgeProfile;
+    }
 }

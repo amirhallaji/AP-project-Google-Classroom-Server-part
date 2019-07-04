@@ -84,6 +84,10 @@ class ClientHandler extends Thread {
                         classInfo(parrams);
                         break;
                     }
+                    case "personProfile": {
+                        personProfile(parrams);
+                        break;
+                    }
 
                 }
             }
@@ -92,6 +96,7 @@ class ClientHandler extends Thread {
             //System.out.println(e);
         }
     }
+
 
     //****************************************************************
     public void userChecker(String[] parrams) throws IOException {
@@ -393,13 +398,13 @@ class ClientHandler extends Thread {
 
         Class c = Server.classes.get(Server.classPositions.get(classCode));
 
-        if (!title.equals("noTitle")){
+        if (!title.equals("noTitle")) {
             c.setName(title);
         }
-        if (!description.equals("noDescription")){
+        if (!description.equals("noDescription")) {
             c.setDescription(description);
         }
-        if (!roomNumber.equals("noRoomNumber")){
+        if (!roomNumber.equals("noRoomNumber")) {
             c.setName(roomNumber);
         }
 
@@ -415,11 +420,22 @@ class ClientHandler extends Thread {
         String classCode = parrams[1];
         Class c = Server.classes.get(Server.classPositions.get(classCode));
 
-        result = result.concat(c.getName() + ":" + c.getDescription() + ":" + c.getNumber() + ":" +c.getClassCode());
+        result = result.concat(c.getName() + ":" + c.getDescription() + ":" + c.getNumber() + ":" + c.getClassCode());
         outputStream.writeUTF(result);
         System.out.println("-- SERVER >> " + result);
         outputStream.flush();
     }
 
     //*****************************************************************
+
+    private void personProfile(String[] parrams) {
+        String username = parrams[1];
+        Person person = Server.people.get(Server.position.get(username));
+        String result = "personProfile:";
+        String image = person.getIamgeProfile();
+        //result  = result.concat(person.getIamgeProfile() + ":" + person.);
+    }
+
+    //*****************************************************************
+
 }
