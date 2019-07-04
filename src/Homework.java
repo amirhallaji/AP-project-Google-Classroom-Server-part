@@ -1,25 +1,25 @@
 import java.util.ArrayList;
 
 public class Homework {
-    private String title ;
-    private String decsription ;
-    private String points ;
-    private String date ;
-    private String time ;
-    private String topic ;
-    private String code ;
-    private Integer numberOfComments ;
-    private ArrayList <Comment> comments ;
+    private String title;
+    private String description;
+    private String points;
+    private String date;
+    private String time;
+    private String topic;
+    private String homeworkCode;
+    private Integer numberOfComments;
+    private ArrayList<Comment> comments;
 
-    public Homework(String title, String decsription, String points, String date,String time, String topic) {
+    public Homework(String title, String description, String points, String date, String time, String topic, String code) {
         this.title = title;
-        this.decsription = decsription;
+        this.description = description;
         this.points = points;
         this.date = date;
-        this.time = time ;
+        this.time = time;
         this.topic = topic;
-        this.comments = new ArrayList<>() ;
-        numberOfComments = 0 ;
+        this.comments = new ArrayList<>();
+        numberOfComments = 0;
     }
 
     public Integer getNumberOfComments() {
@@ -38,12 +38,12 @@ public class Homework {
         this.title = title;
     }
 
-    public String getDecsription() {
-        return decsription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDecsription(String decsription) {
-        this.decsription = decsription;
+    public void serDescription(String description) {
+        this.description = description;
     }
 
     public String getPoints() {
@@ -78,12 +78,12 @@ public class Homework {
         this.time = time;
     }
 
-    public String getCode() {
-        return code;
+    public String getHomeworkCode() {
+        return homeworkCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setHomeworkCode(String homeworkCode) {
+        this.homeworkCode = homeworkCode;
     }
 
     public ArrayList<Comment> getComments() {

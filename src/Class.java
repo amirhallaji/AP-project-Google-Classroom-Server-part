@@ -5,7 +5,7 @@ class Class implements Serializable {
     private String name;
     private String description;
     private String number;
-    private String code;
+    private String classCode;
     private Person teacher;
     private ArrayList<Person> TAs = new ArrayList<>();
     private ArrayList<Person> students = new ArrayList<>();
@@ -23,15 +23,15 @@ class Class implements Serializable {
 
     @Override
     public String toString() {
-        return this.code ;
+        return this.classCode;
     }
 
-    public String getCode() {
-        return code;
+    public String getClassCode() {
+        return classCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setClassCode(String classCode) {
+        this.classCode = classCode;
     }
 
     public ArrayList<Person> getStudents() {

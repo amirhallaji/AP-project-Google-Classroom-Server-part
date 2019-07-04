@@ -10,9 +10,10 @@ class Server {
     //Related to Classes
     static ArrayList<Class>classes = new ArrayList<>(); //all of classes used for generating unique code
     static HashMap<String,Integer>classPositions = new HashMap<>() ; //<The Class Code,its position>
-    //
+    //homework
     static ArrayList<Homework> homework = new ArrayList<>();
-    static HashMap<String,String> homeworkTopic = new HashMap<>();// code,topic
+    static HashMap<String,Integer> homeworkPositions = new HashMap<>();// code,topic
+    static ArrayList<String> homeworkCode = new ArrayList<>();
     //static HashMap<String,Class> code
     static String message;
 

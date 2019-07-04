@@ -4,6 +4,7 @@ import java.util.*;
 public class Person implements Serializable {
     private String username;
     private String password;
+    private String iamgeProfile;
     private boolean isLoggedIn = false;
     private ArrayList<Class> personClasses =new ArrayList<>();
     //picture
