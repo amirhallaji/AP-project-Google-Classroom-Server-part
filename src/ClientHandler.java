@@ -88,6 +88,11 @@ class ClientHandler extends Thread {
                         personProfile(parrams);
                         break;
                     }
+                    case "notification": {
+                       notification(parrams);
+                        break;
+                    }
+
 
                 }
             }
@@ -96,6 +101,7 @@ class ClientHandler extends Thread {
             //System.out.println(e);
         }
     }
+
 
 
     //****************************************************************
@@ -386,7 +392,7 @@ class ClientHandler extends Thread {
     private void imageProfile(String[] parrams) {
         String result = parrams[0];
         result = result.concat(":" + parrams[1] + ":" + parrams[2]);
-        System.out.println("-- SERVER >> " + result);
+        //System.out.println("-- SERVER >> " + result);
     }
     //*************************************************************
 
@@ -435,6 +441,14 @@ class ClientHandler extends Thread {
         String image = person.getIamgeProfile();
         //result  = result.concat(person.getIamgeProfile() + ":" + person.);
     }
+
+    //*****************************************************************
+
+
+    private void notification(String[] parrams) {
+        String username = parrams[1];
+    }
+
 
     //*****************************************************************
 

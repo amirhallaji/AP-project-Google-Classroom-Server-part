@@ -7,6 +7,7 @@ public class Person implements Serializable {
     private String iamgeProfile;
     private boolean isLoggedIn = false;
     private ArrayList<Class> personClasses =new ArrayList<>();
+    private ArrayList<Notification> notifications = new ArrayList<>();
     //picture
 
 
@@ -55,5 +56,17 @@ public class Person implements Serializable {
 
     public String getIamgeProfile() {
         return iamgeProfile;
+    }
+
+    public void setPersonClasses(ArrayList<Class> personClasses) {
+        this.personClasses = personClasses;
+    }
+
+    public ArrayList<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(ArrayList<Notification> notifications) {
+        this.notifications = notifications;
     }
 }
