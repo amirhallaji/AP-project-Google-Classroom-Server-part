@@ -20,7 +20,7 @@ public class Homework {
         this.date = date;
         this.time = time;
         this.topic = topic;
-        this.assignment = "";
+        this.assignment = "noAssignment";
         this.comments = new ArrayList<>();
         numberOfComments = 0;
     }

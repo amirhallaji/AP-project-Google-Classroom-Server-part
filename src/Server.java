@@ -19,7 +19,7 @@ class Server {
 
     public static void main(String[] args) throws IOException {
 
-        ServerSocket serverSocket  = new ServerSocket(8867);
+        ServerSocket serverSocket  = new ServerSocket(8850);
         Socket clientSocket;
 
         while (true){
