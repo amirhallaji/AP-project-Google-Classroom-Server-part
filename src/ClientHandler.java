@@ -60,8 +60,12 @@ class ClientHandler extends Thread {
                         homeworkList(parrams[1], parrams[2]);
                         break;
                     }
-                    case "people": {
-                        people(parrams[1]);
+                    case "studentList": {
+                        studentList(parrams[1]);
+                        break;
+                    }
+                    case "teacherList": {
+                        teacherList(parrams[1]);
                         break;
                     }
                     case "homeworkProfile": {
@@ -164,12 +168,10 @@ class ClientHandler extends Thread {
             person = Server.people.get(Server.position.get(parrams[1]));
             if (person.getPassword().equals(parrams[2])) {
                 person.setLoggedIn(true);
-                // System.out.println("ClientHandle Success sign in >>>(signIn method) " + parrams[1] + "  " + parrams[2]);
                 outputStream.writeUTF("signIn:" + parrams[1] + ":success");
                 outputStream.flush();
                 System.out.println(" -- SERVER >>> " + "signIn:" + parrams[1] + "success");
             } else {
-                //  System.out.println("ClientHandler error sign in >>>(signIn method) " + parrams[1] + "  " + parrams[2]);
                 outputStream.writeUTF("signIn:" + parrams[1] + ":error");
                 outputStream.flush();
                 System.out.println(" -- SERVER >>> " + "signIn:" + parrams[1] + ":error");
@@ -339,7 +341,7 @@ class ClientHandler extends Thread {
     }
     //**********************************************************
 
-    public static void people(String s) throws IOException {
+    public static void teacherList(String s) throws IOException {
         Class c = Server.classes.get(Server.classPositions.get(s));
         String result = "people:";
 
@@ -359,6 +361,28 @@ class ClientHandler extends Thread {
     }
 
     //***********************************************************
+
+    public static void studentList(String s) throws IOException {
+        Class c = Server.classes.get(Server.classPositions.get(s));
+        String result = "people:";
+
+        for (int i = 0; i < c.getTAs().size(); i++) {
+            result = result.concat(c.getTAs().get(i).getUsername() + "@");
+        }
+
+        result = result.concat(":");
+
+        for (int i = 0; i < c.getStudents().size(); i++) {
+            result = result.concat(c.getStudents().get(i).getUsername() + "@");
+        }
+
+        outputStream.writeUTF(result);
+        outputStream.flush();
+        System.out.println(" -- SERVER >> " + result);
+    }
+
+    //***********************************************************
+
     public void homeworkProfile(String homeworkCode) throws IOException {
         String result = "homeworkProfile:";
         Homework homework = Server.homework.get(Server.homeworkPositions.get(homeworkCode));
