@@ -132,6 +132,14 @@ class ClientHandler extends Thread {
                         addTopic(parrams);
                         break;
                     }
+                    case "addStudent":{
+                        addStudent(parrams);
+                        break;
+                    }
+                    case "addTeacher":{
+                        addTeacher(parrams);
+                        break;
+                    }
 
 
                 }
@@ -141,6 +149,7 @@ class ClientHandler extends Thread {
             //System.out.println(e);
         }
     }
+
 
     //****************************************************************
     public void userChecker(String[] parrams) throws IOException {
@@ -467,12 +476,13 @@ class ClientHandler extends Thread {
 
     //*****************************************************************
 
-    private void personProfile(String[] parrams) {
+    private void personProfile(String[] parrams) throws IOException {
         String username = parrams[1];
         Person person = Server.people.get(Server.position.get(username));
-        String result = "personProfile:";
+        String result = "personProfile:" + person.getUsername() + ":";
         String image = person.getImageProfile();
-        //result  = result.concat(person.getImageProfile() + ":" + person.);
+        outputStream.writeUTF(result);
+        outputStream.flush();
     }
 
     //*****************************************************************
@@ -674,6 +684,37 @@ class ClientHandler extends Thread {
         c.getTopics().add(parrams[2]);
         String result = "success";
 
+    }
+
+    //*************************************************************
+
+    private void addTeacher(String[] parrams) throws IOException {
+        Class c = Server.classes.get(Server.classPositions.get(parrams[1]));
+        String result = "addTeacher:";
+        if (!Server.position.containsKey(parrams[2])){
+            result = result.concat(c.getClassCode() + ":" + "error");
+        }
+        else {
+            Person p = Server.people.get(Server.position.get(parrams[2]));
+            c.getTAs().add(p);
+        }
+        outputStream.writeUTF(result);
+        outputStream.flush();
+    }
+
+    //*************************************************************
+    private void addStudent(String[] parrams) throws IOException {
+        Class c = Server.classes.get(Server.classPositions.get(parrams[1]));
+        String result = "addStudent:";
+        if (!Server.position.containsKey(parrams[2])){
+            result = result.concat(c.getClassCode() + ":" + "error");
+        }
+        else {
+            Person p = Server.people.get(Server.position.get(parrams[2]));
+            c.getStudents().add(p);
+        }
+        outputStream.writeUTF(result);
+        outputStream.flush();
     }
 
 }
