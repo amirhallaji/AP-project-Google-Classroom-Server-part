@@ -23,7 +23,7 @@ class Server {
         ServerSocket serverSocket  = new ServerSocket(8850);
         Socket clientSocket;
 
-        loadData();
+        //loadData();
 
         while (true){
             clientSocket = serverSocket.accept();
@@ -59,7 +59,7 @@ class Server {
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             Class c = (Class) objectInputStream.readObject();
             classes.add(c);
-            classPositions.put(c.getClassCode(),classes.size()-1);
+           classPositions.put(c.getClassCode(),classes.size()-1);
             System.out.println("Classes: " + c.getClassCode());
         }
         for (int i = 0; i < numberOfHomework; i++) {

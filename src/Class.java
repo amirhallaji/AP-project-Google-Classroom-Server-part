@@ -10,7 +10,7 @@ class Class implements Serializable {
     private ArrayList<Person> TAs = new ArrayList<>();
     private ArrayList<Person> students = new ArrayList<>();
     private ArrayList<Homework>homework = new ArrayList<>();
-    private ArrayList<String>topic = new ArrayList<>();
+    private ArrayList<String> topics;
 
 
 
@@ -19,6 +19,8 @@ class Class implements Serializable {
         this.name = name;
         this.description = description;
         this.number = number;
+        topics = new ArrayList<>();
+        topics.add("noTopic");
     }
 
     @Override
@@ -58,12 +60,12 @@ class Class implements Serializable {
         this.homework = homework;
     }
 
-    public ArrayList<String> getTopic() {
-        return topic;
+    public ArrayList<String> getTopics() {
+        return topics;
     }
 
-    public void setTopic(ArrayList<String> topic) {
-        this.topic = topic;
+    public void setTopics(ArrayList<String> topics) {
+        this.topics = topics;
     }
 
     public Person getTeacher() {

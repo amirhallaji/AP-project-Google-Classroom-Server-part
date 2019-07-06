@@ -1,10 +1,5 @@
-import javafx.beans.binding.ObjectExpression;
-
-import java.awt.*;
 import java.io.*;
 import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -129,6 +124,14 @@ class ClientHandler extends Thread {
                         addPrivateComment(parrams);
                         break;
                     }
+                    case "topics":{
+                        topics(parrams);
+                        break;
+                    }
+                    case "addTopic":{
+                        addTopic(parrams);
+                        break;
+                    }
 
 
                 }
@@ -138,7 +141,6 @@ class ClientHandler extends Thread {
             //System.out.println(e);
         }
     }
-
 
     //****************************************************************
     public void userChecker(String[] parrams) throws IOException {
@@ -306,10 +308,10 @@ class ClientHandler extends Thread {
     public static void classWork(Class c) throws IOException {
 
         String message = "classWork:";
-        for (int i = 0; i < c.getTopic().size(); i++) {
-            message = message.concat(c.getTopic().get(i) + "@");
+        for (int i = 0; i < c.getTopics().size(); i++) {
+            message = message.concat(c.getTopics().get(i) + "@");
             for (int j = 0; j < c.getHomework().size(); j++) {
-                if (c.getHomework().get(i).getTopic().equals(c.getTopic().get(i))) {
+                if (c.getHomework().get(i).getTopic().equals(c.getTopics().get(i))) {
                     message = message.concat(c.getName() + "@");
                 }
             }
@@ -324,7 +326,7 @@ class ClientHandler extends Thread {
 
     public static void classList(String username) throws IOException {
         Person p = Server.people.get(Server.position.get(username));
-        String result = "classList:";
+        String result = "classList:" + p.getUsername() + ":";
         for (int i = 0; i < p.getPersonClasses().size(); i++) {
             Class c = p.getPersonClasses().get(i);
             result = result.concat(c.getName() + ":" + c.getDescription() + ":" + c.getClassCode() + ":");
@@ -655,4 +657,23 @@ class ClientHandler extends Thread {
         objectOutputStream.flush();
 
     }
+    //*************************************************************
+    private void topics(String[] parrams) throws IOException {
+        Class c = Server.classes.get(Server.classPositions.get(parrams[1]));
+        String result = "topics:" + c.getClassCode() + ":";
+        for (int i = 0; i < c.getTopics().size(); i++) {
+            result = result.concat(c.getTopics().get(i) + ":");
+        }
+        System.out.println(" -- SERVER >> " + result);
+        outputStream.writeUTF(result);
+        outputStream.flush();
+    }
+    //*************************************************************
+    private void addTopic(String[] parrams) {
+        Class c = Server.classes.get(Server.classPositions.get(parrams[1]));
+        c.getTopics().add(parrams[2]);
+        String result = "success";
+
+    }
+
 }
