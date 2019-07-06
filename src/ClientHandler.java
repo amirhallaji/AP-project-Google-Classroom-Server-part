@@ -383,7 +383,7 @@ class ClientHandler extends Thread {
         String result = "studentList:" + c.getClassCode() + ":";
 
         for (int i = 0; i < c.getStudents().size(); i++) {
-            result = result.concat(c.getStudents().get(i).getUsername() + ":" + c.getStudents().get(i).getImageProfile() + ":");
+            result = result.concat(c.getStudents().get(i).getUsername() + ":" + "imageTest" + ":");
         }
         System.out.println(" -- SERVER >> " + result);
         outputStream.writeUTF(result);
