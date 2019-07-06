@@ -1,4 +1,6 @@
-public class Notification {
+import java.io.Serializable;
+
+public class Notification implements Serializable {
     private String username;
     private String message;
 

@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Homework {
+public class Homework implements Serializable {
     private String title;
     private String description;
     private String points;

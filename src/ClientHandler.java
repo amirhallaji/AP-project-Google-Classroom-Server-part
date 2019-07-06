@@ -1,3 +1,6 @@
+import javafx.beans.binding.ObjectExpression;
+
+import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
@@ -166,7 +169,6 @@ class ClientHandler extends Thread {
             outputStream.flush();
             System.out.println(" -- SERVER >>> " + "error:repeatedUsername");
         } else {
-
             Person person1 = new Person(parrams[1], parrams[2]);
             Server.people.add(person1);
             Server.position.put(parrams[1], Server.people.size() - 1);
@@ -183,8 +185,6 @@ class ClientHandler extends Thread {
         Person person;
         //System.out.println("Into signIn method : " + parrams[1]);
         // checking username
-        File file = new File(parrams[1] + ":" + parrams[2]);
-        if(file.exists())
         if (Server.position.containsKey(parrams[1])) {
             person = Server.people.get(Server.position.get(parrams[1]));
             if (person.getPassword().equals(parrams[2])) {
@@ -210,9 +210,7 @@ class ClientHandler extends Thread {
         Class c = new Class(person, s[2], s[3], s[4]); //teacher(user):name:description:room number
         person.getPersonClasses().add(c); //the creator of the class
         Server.classes.add(c);
-
         String code;
-
         while (true) {
             code = Server.codeGenerator();
             if (!Server.classPositions.containsKey(code)) {
@@ -222,14 +220,11 @@ class ClientHandler extends Thread {
         }
         Server.classPositions.put(code, Server.classes.size() - 1);
         c.getTAs().add(person);
-        // System.out.println("our classLists" + Server.classes.toString());
-        //  System.out.println("person arrayList" + Server.people.toString());
-        // System.out.println("our hashMap for class" + Server.classPositions.toString());
         try {
+            classToFile(c);
             outputStream.writeUTF("createClass:success:" + c.getClassCode());
             outputStream.flush();
             System.out.println(" -- SERVER >>> " + "createClass:success:" + c.getClassCode());
-            //  System.out.println("createClass Successful " + c.getHomeworkCode());
         } catch (IOException e) {
             //  System.out.println("Exception >> " + e);
         }
@@ -237,7 +232,7 @@ class ClientHandler extends Thread {
     }
 
     //****************************************************************
-    public static void joinClass(String[] s) {
+    public static void joinClass(String[] s) throws IOException {
 
         //System.out.println("SERVER::" + s[0] + s[1] + s[2]);
         if (!Server.classPositions.containsKey(s[2])) {
@@ -255,6 +250,8 @@ class ClientHandler extends Thread {
             Class c = Server.classes.get(Server.classPositions.get(s[2]));
             p.getPersonClasses().add(c);
             c.getStudents().add(p);
+            updateUser(p);
+            updateClass(c);
             try {
                 outputStream.writeUTF("joinClass:success:" + c.getName());
                 outputStream.flush();
@@ -292,16 +289,15 @@ class ClientHandler extends Thread {
                 break;
             }
         }
-
-
         Homework homework = new Homework(name, description, point, date, time, topic, homeworkCode);
         Class c = Server.classes.get(Server.classPositions.get(classCode));
         c.getHomework().add(homework);
         c.getHomework().get(c.getHomework().size() - 1).setHomeworkCode(homeworkCode);
 
-        Server.homework.add(homework);
-        Server.homeworkPositions.put(homeworkCode, Server.homework.size() - 1);
+        Server.homeworks.add(homework);
+        Server.homeworkPositions.put(homeworkCode, Server.homeworks.size() - 1);
 
+        homeworkToFile(homework);
         outputStream.writeUTF("createHomework:success:" + homeworkCode + ":");
         System.out.println(" -- SERVER >>>" + "createHomework:success:" + homeworkCode + ":");
     }
@@ -396,7 +392,7 @@ class ClientHandler extends Thread {
 
     public void homeworkProfile(String homeworkCode) throws IOException {
         String result = "homeworkProfile:";
-        Homework homework = Server.homework.get(Server.homeworkPositions.get(homeworkCode));
+        Homework homework = Server.homeworks.get(Server.homeworkPositions.get(homeworkCode));
 
         result = result.concat(homework.getHomeworkCode() + ":" + homework.getTitle() + ":");
         if (homework.getPublicComments().size() == 0) {
@@ -448,7 +444,7 @@ class ClientHandler extends Thread {
         if (!roomNumber.equals("noRoomNumber")) {
             c.setName(roomNumber);
         }
-
+        updateClass(c);
         outputStream.writeUTF("classSetting:success");
         outputStream.flush();
     }
@@ -495,7 +491,7 @@ class ClientHandler extends Thread {
 
     private void studentWork(String[] parrams) throws IOException {
         String homeworkCode = parrams[1];
-        Homework homework = Server.homework.get(Server.homeworkPositions.get(homeworkCode));
+        Homework homework = Server.homeworks.get(Server.homeworkPositions.get(homeworkCode));
         ArrayList<Assignment> assignments = homework.getAssignments();
         String result = "studentWork:" + homework.getHomeworkCode() + ":";
         for (int i = 0; i < assignments.size(); i++) {
@@ -509,7 +505,7 @@ class ClientHandler extends Thread {
     //*****************************************************************
 
     private void privateComment(String[] parrams) throws IOException {
-        Homework homework = Server.homework.get(Server.homeworkPositions.get(parrams[1])); //homework code
+        Homework homework = Server.homeworks.get(Server.homeworkPositions.get(parrams[1])); //homeworks code
         ArrayList<Comment> comments = homework.getPrivateComments();
 
         String result = "privateComment:" + homework.getHomeworkCode() + ":";
@@ -524,7 +520,7 @@ class ClientHandler extends Thread {
     //*****************************************************************
 
     private void publicComment(String[] parrams) throws IOException {
-        Homework homework = Server.homework.get(Server.homeworkPositions.get(parrams[1])); //homework code
+        Homework homework = Server.homeworks.get(Server.homeworkPositions.get(parrams[1])); //homeworks code
         ArrayList<Comment> comments = homework.getPublicComments();
 
         String result = "publicComment:" + homework.getHomeworkCode() + ":";
@@ -540,7 +536,7 @@ class ClientHandler extends Thread {
     //*****************************************************************
     private void addPrivateComment(String[] parrams) throws IOException {
         String result = "addPrivateComment:";
-        Homework homework = Server.homework.get(Server.homeworkPositions.get(parrams[1]));
+        Homework homework = Server.homeworks.get(Server.homeworkPositions.get(parrams[1]));
         Comment comment = new Comment(parrams[3], Server.people.get(Server.position.get(parrams[2])), true);
         homework.getPrivateComments().add(comment);
 
@@ -553,7 +549,7 @@ class ClientHandler extends Thread {
     //***************************************************************
     private void addPublicComment(String[] parrams) throws IOException {
         String result = "addPublicComment:";
-        Homework homework = Server.homework.get(Server.homeworkPositions.get(parrams[1]));
+        Homework homework = Server.homeworks.get(Server.homeworkPositions.get(parrams[1]));
         Comment comment = new Comment(parrams[3], Server.people.get(Server.position.get(parrams[2])), false);
         homework.getPublicComments().add(comment);
 
@@ -572,29 +568,91 @@ class ClientHandler extends Thread {
                 file.createNewFile();
                 Server.numberOfFiles++;
             }
-            System.out.println(Files.exists(Paths.get(Server.userPath + Server.numberOfFiles + ".txt")));
-            FileOutputStream userFileOut = new FileOutputStream(file);
-            ObjectOutputStream objectOut = new ObjectOutputStream(userFileOut);
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
-            objectOut.writeObject(object);
-            objectOut.flush();
+            objectOutputStream.writeObject(object);
+            objectOutputStream.flush();
             System.out.println("USER SUCCESS !!!!");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
+
     //*************************************************************
 
     public static void classToFile (Object object){
         try {
-            FileOutputStream classFileOut = new FileOutputStream(Server.classPath);
-            ObjectOutputStream objectOut = new ObjectOutputStream(classFileOut);
+            File file = new File(Server.classPath + Server.numberOfClasses + ".txt");
+            if (file.exists()) {
+                file.createNewFile();
+                Server.numberOfClasses++;
+            }
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
-            objectOut.writeObject(object);
-            objectOut.flush();
+            objectOutputStream.writeObject(object);
+            objectOutputStream.flush();
             System.out.println(" CLASS  SUCCESS !!!!!!");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    //*************************************************************
+
+    public static void homeworkToFile (Object object){
+        try {
+            File file = new File(Server.homeworkPath + Server.numberOfHomework + ".txt");
+            if (!file.exists()){
+                file.createNewFile();
+                Server.numberOfHomework++;
+            }
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+            objectOutputStream.writeObject(object);
+            objectOutputStream.flush();
+            System.out.println(" HOMEWORK SUCCESS !!!!");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    //*************************************************************
+
+    public static void updateUser(Object object) throws IOException {
+        Person person = (Person) object;
+        int position = Server.position.get(person.getUsername());
+        File file = new File(Server.userPath + position + ".txt");
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        objectOutputStream.writeObject(person);
+        objectOutputStream.flush();
+    }
+
+    //*************************************************************
+
+    public static void updateClass(Object object) throws IOException {
+        Class c = (Class) object;
+        int position = Server.classPositions.get(c.getClassCode());
+        File file = new File(Server.classPath + position + ".txt");
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        objectOutputStream.writeObject(c);
+        objectOutputStream.flush();
+    }
+
+    //*************************************************************
+
+    public static void updateHomework(Object object) throws IOException {
+        Homework homework = (Homework) object;
+        int position = Server.homeworkPositions.get(homework.getHomeworkCode());
+        File file = new File(Server.homeworkPath + position + ".txt");
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+        objectOutputStream.writeObject(homework);
+        objectOutputStream.flush();
+
     }
 }

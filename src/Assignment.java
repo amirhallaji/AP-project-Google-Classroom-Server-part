@@ -1,4 +1,6 @@
-public class Assignment {
+import java.io.Serializable;
+
+public class Assignment implements Serializable {
     private String username;
     private String text;
     private String image;
@@ -53,4 +55,6 @@ public class Assignment {
     public void setPoint(String point) {
         this.point = point;
     }
+
+
 }
