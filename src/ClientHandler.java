@@ -1,11 +1,13 @@
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 class ClientHandler extends Thread {
     private static Socket clientSocket;
     private static DataInputStream inputStream;
     private static DataOutputStream outputStream;
+    private static byte[] picture;
     static String message;
 
     public ClientHandler(Socket clientSocket, DataInputStream inputStream, DataOutputStream outputStream) {
@@ -110,6 +112,9 @@ class ClientHandler extends Thread {
                     case  "privateComment": {
                         privateComment(parrams);
                         break;
+                    }
+                    case "imageProvider" : {
+                        Iterator iterator;
                     }
 
 
@@ -318,11 +323,12 @@ class ClientHandler extends Thread {
 
     //********************************************************
 
-    public static void classList(String className) throws IOException {
-        Person p = Server.people.get(Server.position.get(className));
+    public static void classList(String username) throws IOException {
+        Person p = Server.people.get(Server.position.get(username));
         String result = "classList:";
         for (int i = 0; i < p.getPersonClasses().size(); i++) {
-            result = result.concat(p.getPersonClasses().get(i).getName() + ":" + p.getPersonClasses().get(i).getDescription() + ":" + p.getPersonClasses().get(i).getClassCode() + ":");
+            Class c = p.getPersonClasses().get(i);
+            result = result.concat(c.getName() + ":" + c.getDescription() + ":" + c.getClassCode() + ":");
         }
         outputStream.writeUTF(result);
         outputStream.flush();
