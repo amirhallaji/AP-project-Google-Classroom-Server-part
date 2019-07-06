@@ -12,6 +12,7 @@ public class Homework {
     private ArrayList<Comment> comments;
     private String assignment ;
     private String imageAssignment ;
+    private ArrayList <Assignment> assignments;
 
     public Homework(String title, String description, String points, String date, String time, String topic, String code) {
         this.title = title;
@@ -23,6 +24,14 @@ public class Homework {
         this.assignment = "noAssignment";
         this.comments = new ArrayList<>();
         numberOfComments = 0;
+    }
+
+    public ArrayList<Assignment> getAssignments() {
+        return assignments;
+    }
+
+    public void setAssignments(ArrayList<Assignment> assignments) {
+        this.assignments = assignments;
     }
 
     public Integer getNumberOfComments() {

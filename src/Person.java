@@ -4,7 +4,7 @@ import java.util.*;
 public class Person implements Serializable {
     private String username;
     private String password;
-    private String iamgeProfile;
+    private String imageProfile;
     private boolean isLoggedIn = false;
     private ArrayList<Class> personClasses =new ArrayList<>();
     private ArrayList<Notification> notifications = new ArrayList<>();
@@ -50,12 +50,12 @@ public class Person implements Serializable {
         return isLoggedIn;
     }
 
-    public void setIamgeProfile(String iamgeProfile) {
-        this.iamgeProfile = iamgeProfile;
+    public void setImageProfile(String imageProfile) {
+        this.imageProfile = imageProfile;
     }
 
-    public String getIamgeProfile() {
-        return iamgeProfile;
+    public String getImageProfile() {
+        return imageProfile;
     }
 
     public void setPersonClasses(ArrayList<Class> personClasses) {

@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 class ClientHandler extends Thread {
     private static Socket clientSocket;
@@ -93,6 +94,15 @@ class ClientHandler extends Thread {
                         notification(parrams);
                         break;
                     }
+                    case "studentWork" : {
+                        studentWork(parrams);
+                        break;
+                    }
+                    case  "instructions": {
+                        instructions(parrams);
+                        break;
+                    }
+
 
 
                 }
@@ -359,7 +369,7 @@ class ClientHandler extends Thread {
         String result = "studentList:" + c.getClassCode() + ":";
 
         for (int i = 0; i < c.getStudents().size(); i++) {
-            result = result.concat(c.getStudents().get(i).getUsername() + ":" + c.getStudents().get(i).getIamgeProfile() + ":");
+            result = result.concat(c.getStudents().get(i).getUsername() + ":" + c.getStudents().get(i).getImageProfile() + ":");
         }
         System.out.println(" -- SERVER >> " + result);
         outputStream.writeUTF(result);
@@ -447,8 +457,8 @@ class ClientHandler extends Thread {
         String username = parrams[1];
         Person person = Server.people.get(Server.position.get(username));
         String result = "personProfile:";
-        String image = person.getIamgeProfile();
-        //result  = result.concat(person.getIamgeProfile() + ":" + person.);
+        String image = person.getImageProfile();
+        //result  = result.concat(person.getImageProfile() + ":" + person.);
     }
 
     //*****************************************************************
@@ -458,6 +468,27 @@ class ClientHandler extends Thread {
         String username = parrams[1];
     }
 
+
+    //*****************************************************************
+
+    private void instructions(String[] parrams) {
+
+    }
+
+    //*****************************************************************
+
+    private void studentWork(String[] parrams) throws IOException {
+        String homeworkCode = parrams[1] ;
+        Homework homework = Server.homework.get(Server.homeworkPositions.get(homeworkCode));
+        ArrayList<Assignment> assignments = homework.getAssignments();
+        String result = "studentWork:" + homework.getHomeworkCode()  + ":";
+        for (int i = 0; i < assignments.size() ; i++) {
+            result = result.concat(assignments.get(i).getImage() +  ":" + assignments.get(i).getUsername() + ":" + assignments.get(i).getState()+ ":" + assignments.get(i).getPoint() + ":");
+        }
+        System.out.println(" -- SERVER >> " + result);
+        outputStream.writeUTF(result);
+        outputStream.flush();
+    }
 
     //*****************************************************************
 
