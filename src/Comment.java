@@ -1,7 +1,6 @@
 public class Comment {
     private String comment ;
     private Person sender ;
-
     private boolean isPrivate ;
 
     public Comment(String comment, Person sender, boolean isPrivate) {

@@ -9,7 +9,8 @@ public class Homework {
     private String topic;
     private String homeworkCode;
     private Integer numberOfComments;
-    private ArrayList<Comment> comments;
+    private ArrayList<Comment> publicComments;
+    private ArrayList<Comment> privateComments;
     private String assignment ;
     private String imageAssignment ;
     private ArrayList <Assignment> assignments;
@@ -22,8 +23,16 @@ public class Homework {
         this.time = time;
         this.topic = topic;
         this.assignment = "noAssignment";
-        this.comments = new ArrayList<>();
+        this.publicComments = new ArrayList<>();
         numberOfComments = 0;
+    }
+
+    public ArrayList<Comment> getPrivateComments() {
+        return privateComments;
+    }
+
+    public void setPrivateComments(ArrayList<Comment> privateComments) {
+        this.privateComments = privateComments;
     }
 
     public ArrayList<Assignment> getAssignments() {
@@ -98,12 +107,12 @@ public class Homework {
         this.homeworkCode = homeworkCode;
     }
 
-    public ArrayList<Comment> getComments() {
-        return comments;
+    public ArrayList<Comment> getPublicComments() {
+        return publicComments;
     }
 
-    public void setComments(ArrayList<Comment> comments) {
-        this.comments = comments;
+    public void setPublicComments(ArrayList<Comment> publicComments) {
+        this.publicComments = publicComments;
     }
 
     public void setDescription(String description) {

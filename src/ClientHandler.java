@@ -102,7 +102,15 @@ class ClientHandler extends Thread {
                         instructions(parrams);
                         break;
                     }
+                    case "publicComment": {
+                        publicComment(parrams);
+                        break;
+                    }
 
+                    case  "privateComment": {
+                        privateComment(parrams);
+                        break;
+                    }
 
 
                 }
@@ -112,7 +120,6 @@ class ClientHandler extends Thread {
             //System.out.println(e);
         }
     }
-
 
     //****************************************************************
     public void userChecker(String[] parrams) throws IOException {
@@ -383,11 +390,11 @@ class ClientHandler extends Thread {
         Homework homework = Server.homework.get(Server.homeworkPositions.get(homeworkCode));
 
         result = result.concat(homework.getHomeworkCode() + ":" + homework.getTitle() + ":");
-        if (homework.getComments().size() == 0) {
+        if (homework.getPublicComments().size() == 0) {
             result = result.concat("noComments");
         } else {
-            for (int i = 0; i < homework.getComments().size(); i++) {
-                result = result.concat(homework.getComments().get(i) + "@");
+            for (int i = 0; i < homework.getPublicComments().size(); i++) {
+                result = result.concat(homework.getPublicComments().get(i) + "@");
             }
         }
         if (homework.getAssignment().equals("   ")) {
@@ -491,5 +498,36 @@ class ClientHandler extends Thread {
     }
 
     //*****************************************************************
+
+    private void privateComment(String[] parrams) throws IOException {
+        Homework homework = Server.homework.get(Server.homeworkPositions.get(parrams[1])); //homework code
+        ArrayList <Comment> comments = homework.getPrivateComments() ;
+
+        String result = "privateComment:" + homework.getHomeworkCode() +  ":";
+
+        for (int i = 0; i < comments.size() ; i++) {
+            result = result.concat(comments.get(i).getSender().getUsername() + ":" + comments.get(i).getComment() + ":") ;
+        }
+        System.out.println(" -- SERVER >> " + result);
+        outputStream.writeUTF(result);
+        outputStream.flush();
+    }
+    //*****************************************************************
+
+    private void publicComment(String[] parrams) throws IOException{
+        Homework homework = Server.homework.get(Server.homeworkPositions.get(parrams[1])); //homework code
+        ArrayList <Comment> comments = homework.getPublicComments() ;
+
+        String result = "publicComment:" + homework.getHomeworkCode() + ":";
+
+        for (int i = 0; i < comments.size() ; i++) {
+            result = result.concat(comments.get(i).getSender().getUsername() + ":" + comments.get(i).getComment() + ":") ;
+        }
+        System.out.println(" -- SERVER >> " + result);
+        outputStream.writeUTF(result);
+        outputStream.flush();
+    }
+    //*****************************************************************
+
 
 }
