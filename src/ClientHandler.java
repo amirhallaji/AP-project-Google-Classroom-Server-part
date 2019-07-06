@@ -26,7 +26,6 @@ class ClientHandler extends Thread {
                         break;
                     }
                     case "signIn": {
-                        //System.out.println("Server >>>>>>>>>>>" + "singIn");
                         signIn(parrams);
                         break;
                     }
@@ -35,7 +34,6 @@ class ClientHandler extends Thread {
                         break;
                     }
                     case "createClass": {
-                        //System.out.println("##create class from android");
                         createClass(parrams);
                         break;
                     }
@@ -52,7 +50,6 @@ class ClientHandler extends Thread {
                         break;
                     }
                     case "classList": {
-                        //  System.out.println("into classList");
                         classList(parrams[1]);
                         break;
                     }
@@ -93,7 +90,7 @@ class ClientHandler extends Thread {
                         break;
                     }
                     case "notification": {
-                       notification(parrams);
+                        notification(parrams);
                         break;
                     }
 
@@ -105,7 +102,6 @@ class ClientHandler extends Thread {
             //System.out.println(e);
         }
     }
-
 
 
     //****************************************************************
@@ -232,6 +228,7 @@ class ClientHandler extends Thread {
         } else {
             Person p = Server.people.get(Server.position.get(s[1]));
             Class c = Server.classes.get(Server.classPositions.get(s[2]));
+            p.getPersonClasses().add(c);
             c.getStudents().add(p);
             try {
                 outputStream.writeUTF("joinClass:success:" + c.getName());
@@ -310,7 +307,6 @@ class ClientHandler extends Thread {
         for (int i = 0; i < p.getPersonClasses().size(); i++) {
             result = result.concat(p.getPersonClasses().get(i).getName() + ":" + p.getPersonClasses().get(i).getDescription() + ":" + p.getPersonClasses().get(i).getClassCode() + ":");
         }
-        //  System.out.println("Server:classList >>> " + result);
         outputStream.writeUTF(result);
         outputStream.flush();
         System.out.println(" -- SERVER >>> " + result);
@@ -343,42 +339,31 @@ class ClientHandler extends Thread {
 
     public static void teacherList(String s) throws IOException {
         Class c = Server.classes.get(Server.classPositions.get(s));
-        String result = "people:";
+
+        String result = "teacherList:" + c.getClassCode() + ":";
 
         for (int i = 0; i < c.getTAs().size(); i++) {
-            result = result.concat(c.getTAs().get(i).getUsername() + "@");
+            result = result.concat(c.getTAs().get(i).getUsername() + ":imageTest");
         }
-
-        result = result.concat(":");
-
-        for (int i = 0; i < c.getStudents().size(); i++) {
-            result = result.concat(c.getStudents().get(i).getUsername() + "@");
-        }
-
+        System.out.println("Amir >>>>>> "+c.getTAs().get(0).getUsername());
+        System.out.println(" -- SERVER >> " + result);
         outputStream.writeUTF(result);
         outputStream.flush();
-        System.out.println(" -- SERVER >> " + result);
     }
 
     //***********************************************************
 
     public static void studentList(String s) throws IOException {
         Class c = Server.classes.get(Server.classPositions.get(s));
-        String result = "people:";
 
-        for (int i = 0; i < c.getTAs().size(); i++) {
-            result = result.concat(c.getTAs().get(i).getUsername() + "@");
-        }
-
-        result = result.concat(":");
+        String result = "studentList:" + c.getClassCode() + ":";
 
         for (int i = 0; i < c.getStudents().size(); i++) {
-            result = result.concat(c.getStudents().get(i).getUsername() + "@");
+            result = result.concat(c.getStudents().get(i).getUsername() + ":" + c.getStudents().get(i).getIamgeProfile() + ":");
         }
-
+        System.out.println(" -- SERVER >> " + result);
         outputStream.writeUTF(result);
         outputStream.flush();
-        System.out.println(" -- SERVER >> " + result);
     }
 
     //***********************************************************
