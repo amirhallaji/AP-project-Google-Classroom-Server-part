@@ -3,6 +3,9 @@ import java.net.*;
 import java.util.*;
 
 class Server {
+    static String userPath = "Users\\" ;
+    static String classPath = "Class\\";
+
     static ArrayList<ClientHandler> activeClient = new ArrayList<>();
     static ArrayList<Person> people = new ArrayList<>();
     static HashMap<String,Integer> position = new HashMap<>(); //<Username,its position>
@@ -14,6 +17,7 @@ class Server {
     static ArrayList<Homework> homework = new ArrayList<>();
     static HashMap<String,Integer> homeworkPositions = new HashMap<>();// code,topic
     static ArrayList<String> homeworkCode = new ArrayList<>();
+    static int numberOfFiles  = 0;
     //static HashMap<String,Class> code
     static String message;
 
@@ -34,6 +38,8 @@ class Server {
         }
     }
     //****************************************
+
+
     public static String codeGenerator(){ //method for devoting a unique code for each class
         StringBuilder code = new StringBuilder() ;
         for (int i = 0; i < 5 ; i++) {

@@ -24,6 +24,7 @@ public class Homework {
         this.topic = topic;
         this.assignment = "noAssignment";
         this.publicComments = new ArrayList<>();
+        this.privateComments = new ArrayList<>();
         numberOfComments = 0;
     }
 

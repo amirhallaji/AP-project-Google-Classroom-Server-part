@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -96,11 +98,11 @@ class ClientHandler extends Thread {
                         notification(parrams);
                         break;
                     }
-                    case "studentWork" : {
+                    case "studentWork": {
                         studentWork(parrams);
                         break;
                     }
-                    case  "instructions": {
+                    case "instructions": {
                         instructions(parrams);
                         break;
                     }
@@ -109,12 +111,20 @@ class ClientHandler extends Thread {
                         break;
                     }
 
-                    case  "privateComment": {
+                    case "privateComment": {
                         privateComment(parrams);
                         break;
                     }
-                    case "imageProvider" : {
+                    case "imageProvider": {
                         Iterator iterator;
+                    }
+                    case "addPublicComment": {
+                        addPublicComment(parrams);
+                        break;
+                    }
+                    case "addPrivateComment": {
+                        addPrivateComment(parrams);
+                        break;
                     }
 
 
@@ -125,6 +135,7 @@ class ClientHandler extends Thread {
             //System.out.println(e);
         }
     }
+
 
     //****************************************************************
     public void userChecker(String[] parrams) throws IOException {
@@ -151,25 +162,15 @@ class ClientHandler extends Thread {
     //*************************************************************
     public void signUp(String[] parrams) throws IOException {
         if (Server.position.containsKey(parrams[1])) {
-            //System.out.println("Into signUp method :" + parrams[1]);
             outputStream.writeUTF("error:" + parrams[1] + ":repeatedUsername");
             outputStream.flush();
             System.out.println(" -- SERVER >>> " + "error:repeatedUsername");
         } else {
-            try { //Creating new file for each person when registering
-                File information = new File(parrams[1] + ".txt");
-                information.createNewFile();
-                FileWriter fileWriter = new FileWriter(information);
-                fileWriter.write(parrams[1] + ":" + parrams[2]);
-                fileWriter.flush();
-                System.out.println(" -- SERVER >>> " + parrams[1] + ":" + parrams[2]);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
             Person person1 = new Person(parrams[1], parrams[2]);
             Server.people.add(person1);
             Server.position.put(parrams[1], Server.people.size() - 1);
+            userToFile(person1);
             // System.out.println("ClientHandler >>> Register success(signUp method)" + parrams[1] + "  " + parrams[2]);
             outputStream.writeUTF("signUp:" + parrams[1] + ":success");
             outputStream.flush();
@@ -182,6 +183,8 @@ class ClientHandler extends Thread {
         Person person;
         //System.out.println("Into signIn method : " + parrams[1]);
         // checking username
+        File file = new File(parrams[1] + ":" + parrams[2]);
+        if(file.exists())
         if (Server.position.containsKey(parrams[1])) {
             person = Server.people.get(Server.position.get(parrams[1]));
             if (person.getPassword().equals(parrams[2])) {
@@ -368,7 +371,7 @@ class ClientHandler extends Thread {
         for (int i = 0; i < c.getTAs().size(); i++) {
             result = result.concat(c.getTAs().get(i).getUsername() + ":imageTest");
         }
-        System.out.println("Amir >>>>>> "+c.getTAs().get(0).getUsername());
+        System.out.println("Amir >>>>>> " + c.getTAs().get(0).getUsername());
         System.out.println(" -- SERVER >> " + result);
         outputStream.writeUTF(result);
         outputStream.flush();
@@ -491,12 +494,12 @@ class ClientHandler extends Thread {
     //*****************************************************************
 
     private void studentWork(String[] parrams) throws IOException {
-        String homeworkCode = parrams[1] ;
+        String homeworkCode = parrams[1];
         Homework homework = Server.homework.get(Server.homeworkPositions.get(homeworkCode));
         ArrayList<Assignment> assignments = homework.getAssignments();
-        String result = "studentWork:" + homework.getHomeworkCode()  + ":";
-        for (int i = 0; i < assignments.size() ; i++) {
-            result = result.concat(assignments.get(i).getImage() +  ":" + assignments.get(i).getUsername() + ":" + assignments.get(i).getState()+ ":" + assignments.get(i).getPoint() + ":");
+        String result = "studentWork:" + homework.getHomeworkCode() + ":";
+        for (int i = 0; i < assignments.size(); i++) {
+            result = result.concat(assignments.get(i).getImage() + ":" + assignments.get(i).getUsername() + ":" + assignments.get(i).getState() + ":" + assignments.get(i).getPoint() + ":");
         }
         System.out.println(" -- SERVER >> " + result);
         outputStream.writeUTF(result);
@@ -507,12 +510,12 @@ class ClientHandler extends Thread {
 
     private void privateComment(String[] parrams) throws IOException {
         Homework homework = Server.homework.get(Server.homeworkPositions.get(parrams[1])); //homework code
-        ArrayList <Comment> comments = homework.getPrivateComments() ;
+        ArrayList<Comment> comments = homework.getPrivateComments();
 
-        String result = "privateComment:" + homework.getHomeworkCode() +  ":";
+        String result = "privateComment:" + homework.getHomeworkCode() + ":";
 
-        for (int i = 0; i < comments.size() ; i++) {
-            result = result.concat(comments.get(i).getSender().getUsername() + ":" + comments.get(i).getComment() + ":") ;
+        for (int i = 0; i < comments.size(); i++) {
+            result = result.concat(comments.get(i).getSender().getUsername() + ":" + comments.get(i).getComment() + ":");
         }
         System.out.println(" -- SERVER >> " + result);
         outputStream.writeUTF(result);
@@ -520,20 +523,78 @@ class ClientHandler extends Thread {
     }
     //*****************************************************************
 
-    private void publicComment(String[] parrams) throws IOException{
+    private void publicComment(String[] parrams) throws IOException {
         Homework homework = Server.homework.get(Server.homeworkPositions.get(parrams[1])); //homework code
-        ArrayList <Comment> comments = homework.getPublicComments() ;
+        ArrayList<Comment> comments = homework.getPublicComments();
 
         String result = "publicComment:" + homework.getHomeworkCode() + ":";
 
-        for (int i = 0; i < comments.size() ; i++) {
-            result = result.concat(comments.get(i).getSender().getUsername() + ":" + comments.get(i).getComment() + ":") ;
+        for (int i = 0; i < comments.size(); i++) {
+            result = result.concat(comments.get(i).getSender().getUsername() + ":" + comments.get(i).getComment() + ":");
         }
         System.out.println(" -- SERVER >> " + result);
         outputStream.writeUTF(result);
         outputStream.flush();
     }
+
     //*****************************************************************
+    private void addPrivateComment(String[] parrams) throws IOException {
+        String result = "addPrivateComment:";
+        Homework homework = Server.homework.get(Server.homeworkPositions.get(parrams[1]));
+        Comment comment = new Comment(parrams[3], Server.people.get(Server.position.get(parrams[2])), true);
+        homework.getPrivateComments().add(comment);
 
+        result = result.concat(comment.getSender().getUsername() + ":success");
+        System.out.println(" -- SERVER >> " + result);
+        outputStream.writeUTF(result);
+        outputStream.flush();
+    }
 
+    //***************************************************************
+    private void addPublicComment(String[] parrams) throws IOException {
+        String result = "addPublicComment:";
+        Homework homework = Server.homework.get(Server.homeworkPositions.get(parrams[1]));
+        Comment comment = new Comment(parrams[3], Server.people.get(Server.position.get(parrams[2])), false);
+        homework.getPublicComments().add(comment);
+
+        result = result.concat(comment.getSender().getUsername() + ":success");
+        System.out.println(" -- SERVER >> " + result);
+        outputStream.writeUTF(result);
+        outputStream.flush();
+
+    }
+    //****************************************************************
+
+    public static void userToFile(Object object) {
+        try {
+            File file = new File(Server.userPath + Server.numberOfFiles + ".txt") ;
+            if(!file.exists()){
+                file.createNewFile();
+                Server.numberOfFiles++;
+            }
+            System.out.println(Files.exists(Paths.get(Server.userPath + Server.numberOfFiles + ".txt")));
+            FileOutputStream userFileOut = new FileOutputStream(file);
+            ObjectOutputStream objectOut = new ObjectOutputStream(userFileOut);
+
+            objectOut.writeObject(object);
+            objectOut.flush();
+            System.out.println("USER SUCCESS !!!!");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    //*************************************************************
+
+    public static void classToFile (Object object){
+        try {
+            FileOutputStream classFileOut = new FileOutputStream(Server.classPath);
+            ObjectOutputStream objectOut = new ObjectOutputStream(classFileOut);
+
+            objectOut.writeObject(object);
+            objectOut.flush();
+            System.out.println(" CLASS  SUCCESS !!!!!!");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }
