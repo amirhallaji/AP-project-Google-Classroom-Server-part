@@ -8,6 +8,7 @@ class Server {
     static String userPath = "Users\\" ;
     static String classPath = "Classes\\";
     static String homeworkPath = "Homework\\";
+    static int numberOfActiveClients = 0;
     static ArrayList<Person> people = new ArrayList<>();
     static HashMap<String,Integer> position = new HashMap<>(); //<Username,its position>
     static ArrayList<Class>classes = new ArrayList<>(); //all of classes used for generating unique code
@@ -15,10 +16,11 @@ class Server {
     static ArrayList<Homework> homeworks = new ArrayList<>();
     static HashMap<String,Integer> homeworkPositions = new HashMap<>();// code,topic
     static ArrayList<String> homeworkCode = new ArrayList<>();
+    static ArrayList<ClientHandler> activeClients = new ArrayList<>();
     static int numberOfFiles  = 0 , numberOfHomework = 0 , numberOfClasses = 0;
     static String message;
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 
         ServerSocket serverSocket  = new ServerSocket(8850);
         Socket clientSocket;
@@ -31,8 +33,23 @@ class Server {
             DataInputStream serverDataInputStream = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream serverDataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
 
+
             //Devoting new thread for each Client
             Thread thread = new ClientHandler(clientSocket,serverDataInputStream,serverDataOutputStream);
+
+            ClientHandler clientHandler = (ClientHandler) thread;
+            activeClients.add(clientHandler);
+
+//            Thread thread1 = new Counter();
+//            thread1.start();
+
+
+//            Thread.sleep(10);
+//            numberOfActiveClients++;
+//            for (int i = 0; i < activeClients.size(); i++) {
+//                System.out.println(activeClients.get(i));
+//            }
+
             thread.start();
         }
     }

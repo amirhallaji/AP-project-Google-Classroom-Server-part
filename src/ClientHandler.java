@@ -8,6 +8,7 @@ class ClientHandler extends Thread {
     private static DataInputStream inputStream;
     private static DataOutputStream outputStream;
     private static byte[] picture;
+    static int numberOfActiveClients = 0;
     static String message;
 
     public ClientHandler(Socket clientSocket, DataInputStream inputStream, DataOutputStream outputStream) {
@@ -140,6 +141,8 @@ class ClientHandler extends Thread {
                         addTeacher(parrams);
                         break;
                     }
+                    case "salam" :
+                        parsa(parrams);
 
 
                 }
@@ -148,6 +151,10 @@ class ClientHandler extends Thread {
 //            e.printStackTrace();
             //System.out.println(e);
         }
+    }
+
+    private void parsa(String[] parrams) {
+        System.out.println("MY TASK >>>>" + parrams[0]);
     }
 
 
@@ -187,7 +194,7 @@ class ClientHandler extends Thread {
             // System.out.println("ClientHandler >>> Register success(signUp method)" + parrams[1] + "  " + parrams[2]);
             outputStream.writeUTF("signUp:" + parrams[1] + ":success");
             outputStream.flush();
-            System.out.println(" -- SERVER >>> " + "signUp:success");
+            System.out.println(" ****result**** " + "signUp:success");
         }
     }
 
@@ -202,7 +209,7 @@ class ClientHandler extends Thread {
                 person.setLoggedIn(true);
                 outputStream.writeUTF("signIn:" + parrams[1] + ":success");
                 outputStream.flush();
-                System.out.println(" -- SERVER >>> " + "signIn:" + parrams[1] + "success");
+                System.out.println("*****TEST****** " + "signIn:" + parrams[1] + "success");
             } else {
                 outputStream.writeUTF("signIn:" + parrams[1] + ":error");
                 outputStream.flush();
@@ -453,7 +460,8 @@ class ClientHandler extends Thread {
             c.setDescription(description);
         }
         if (!roomNumber.equals("noRoomNumber")) {
-            c.setName(roomNumber);
+            c.setNumber(roomNumber
+            );
         }
         updateClass(c);
         outputStream.writeUTF("classSetting:success");
@@ -468,7 +476,7 @@ class ClientHandler extends Thread {
         String classCode = parrams[1];
         Class c = Server.classes.get(Server.classPositions.get(classCode));
 
-        result = result.concat(c.getName() + ":" + c.getDescription() + ":" + c.getNumber() + ":" + c.getClassCode());
+        result = result.concat(c.getName() + ":" + c.getDescription() + ":" + c.getNumber());
         outputStream.writeUTF(result);
         System.out.println("-- SERVER >> " + result);
         outputStream.flush();
